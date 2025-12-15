@@ -1,0 +1,43 @@
+* { box-sizing: border-box; font-family: monospace; }
+body {
+margin: 0;
+background: linear-gradient(180deg,#ff9ad5,#b36bff);
+color: #fff;
+text-align: center;
+}
+.hero { padding: 2rem; }
+.subtitle { opacity: .8; }
+.vape-section { position: relative; padding: 2rem; }
+#vape { width: 200px; cursor: pointer; }
+#smoke-container { position: absolute; top: 0; left: 50%; pointer-events: none; }
+.smoke {
+position: absolute;
+width: 8px; height: 8px;
+opacity: .8;
+}
+.counter { margin-top: 1rem; }
+.flavors button {
+margin: .3rem;
+padding: .5rem 1rem;
+background: rgba(255,255,255,.2);
+border: none;
+color: #fff;
+}
+.roadmap { padding: 2rem; }
+.roadmap-track {
+display: flex;
+overflow-x: scroll;
+}
+.card {
+min-width: 220px;
+margin: .5rem;
+padding: 1rem;
+background: rgba(255,255,255,.15);
+}
+.socials a {
+margin: .5rem;
+display: inline-block;
+padding: .6rem 1rem;
+background: rgba(255,255,255,.25);
+}
+footer { padding: 1rem; font-size: .8rem; }
