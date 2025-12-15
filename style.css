@@ -12,8 +12,9 @@ text-align: center;
 #smoke-container { position: absolute; top: 0; left: 50%; pointer-events: none; }
 .smoke {
 position: absolute;
-width: 8px; height: 8px;
-opacity: .8;
+width: 10px;
+height: 10px;
+image-rendering: pixelated;
 }
 .counter { margin-top: 1rem; }
 .flavors button {
@@ -41,3 +42,38 @@ padding: .6rem 1rem;
 background: rgba(255,255,255,.25);
 }
 footer { padding: 1rem; font-size: .8rem; }
+
+/* ====== EFFECTS ====== */
+
+.hue {
+  animation: hueFlash 0.8s ease;
+}
+
+@keyframes hueFlash {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(30deg); }
+}
+
+.glitch {
+  animation: glitchFlash 0.8s ease;
+}
+
+@keyframes glitchFlash {
+  0%   { filter: contrast(100%); }
+  50%  { filter: contrast(140%) saturate(130%); }
+  100% { filter: contrast(100%); }
+}
+
+/* ====== MUTE BUTTON ====== */
+#mute {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  color: white;
+  font-size: 16px;
+  padding: 6px 10px;
+  cursor: pointer;
+  z-index: 1000;
+}
