@@ -73,12 +73,25 @@ h1 {
 #vape-zone {
   position: relative;
   text-align: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 #vape {
-  width: 150px;
+  width: clamp(220px, 45vw, 360px);
+  max-width: 90vw;
   cursor: pointer;
+  transition: transform 0.1s steps(2);
+}
+
+#vape:active {
+  transform: scale(0.96);
+}
+
+.hint {
+  font-family: 'Press Start 2P';
+  font-size: 10px;
+  opacity: 0.7;
+  margin-top: 8px;
 }
 
 /* ================= FLAVORS ================= */
@@ -106,8 +119,9 @@ h1 {
   transform: translateY(-2px);
 }
 
-#flavors button.active {
-  background: white;
+#flavors button:active {
+  transform: translateY(2px);
+  background: #ff4fd8;
   color: black;
 }
 
@@ -194,4 +208,25 @@ section.show {
 section h2 {
   font-family: 'Press Start 2P';
   font-size: 14px;
+}
+
+/* ================= CLICK SAFETY ================= */
+
+/* Decorative layers NEVER capture clicks */
+#crt,
+#noise,
+.bg-smoke,
+.star,
+#smoke-layer {
+  pointer-events: none;
+}
+
+/* Interactive elements ALWAYS on top */
+header,
+#vape-zone,
+#vape,
+#flavors,
+#flavors button {
+  position: relative;
+  z-index: 50;
 }
