@@ -17,8 +17,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // SCREEN ZOOM EFFECT FOR CINEMATIC CLOUD
 function screenZoom() {
-  document.body.classList.add("zoom");
-  setTimeout(() => document.body.classList.remove("zoom"), 150);
+  const body = document.body;
+  body.classList.add("zoom");
+
+  // Add a quick shake
+  const start = performance.now();
+  const duration = 150;
+  const amplitude = 6; // shake distance in px
+
+  function shakeFrame(time) {
+    const progress = (time - start) / duration;
+    if (progress < 1) {
+      const x = (Math.random() - 0.5) * amplitude;
+      const y = (Math.random() - 0.5) * amplitude;
+      body.style.transform = `scale(1.02) translate(${x}px, ${y}px)`;
+      requestAnimationFrame(shakeFrame);
+    } else {
+      body.style.transform = ""; // reset
+      body.classList.remove("zoom");
+    }
+  }
+  requestAnimationFrame(shakeFrame);
 }
 
   // COUNTER ELEMENT
@@ -43,41 +62,66 @@ function screenZoom() {
   // VAPE INTERACTIONS
   function spawnSmoke(hold, burst = false) {
   const rect = vape.getBoundingClientRect();
-  const intensity = Math.min(hold / 600, 5); // intensity grows faster for long drag
-  const baseCount = burst ? 20 : 6; // more clusters for burst (long drag)
+  const intensity = Math.min(hold / 600, 5);
+  const baseCount = burst ? 20 : 6;
   const count = Math.floor(baseCount * intensity);
 
   for (let i = 0; i < count; i++) {
     const cluster = document.createElement("div");
     cluster.className = "smoke-cluster";
     cluster.style.left = rect.left + rect.width / 2 + (Math.random() * 40 - 20) + "px";
-    cluster.style.top = rect.top - 10 + "px"; // tip of vape
+    cluster.style.top = rect.top - 10 + "px";
     cluster.style.opacity = 0.6 + Math.random() * 0.3;
     smokeLayer.appendChild(cluster);
 
-    const squares = Math.floor(5 + Math.random() * 6); // more squares for dense cloud
+    // Determine puff type
+    const puffTypeRand = Math.random();
+    let squares, sizeRange, driftRange, durationRange, opacityRange;
+
+    if (puffTypeRand < 0.4) { // Tiny puff
+      squares = 2 + Math.floor(Math.random() * 3);
+      sizeRange = [4, 8];
+      driftRange = [40, 120];
+      durationRange = [1500, 2500];
+      opacityRange = [0.3, 0.5];
+    } else if (puffTypeRand < 0.85) { // Normal puff
+      squares = 5 + Math.floor(Math.random() * 6);
+      sizeRange = [8, 14];
+      driftRange = [80, 160];
+      durationRange = [2000, 3000];
+      opacityRange = [0.5, 0.7];
+    } else { // Cinematic puff (for long drags)
+      squares = 8 + Math.floor(Math.random() * 6);
+      sizeRange = [12, 28];
+      driftRange = [120, 240];
+      durationRange = [2500, 4000];
+      opacityRange = [0.55, 0.85];
+    }
+
     for (let j = 0; j < squares; j++) {
       const s = document.createElement("div");
       s.className = "smoke";
-      s.style.width = s.style.height = 8 + Math.random() * 12 + "px";
+      const size = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
+      s.style.width = s.style.height = size + "px";
       s.style.background = smokeColor;
       s.style.position = "absolute";
       s.style.left = Math.random() * 30 - 15 + "px";
       s.style.top = Math.random() * 30 - 15 + "px";
-      s.style.opacity = Math.random() * 0.6 + 0.3;
+      s.style.opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
       cluster.appendChild(s);
 
       // cinematic drift
-      const driftX = Math.random() * 120 - 60;
-      const driftY = -100 - Math.random() * 80;
-      const duration = 2500 + Math.random() * 1000;
+      const driftX = Math.random() * driftRange[1] - driftRange[1]/2;
+      const driftY = -driftRange[0] - Math.random() * (driftRange[1]-driftRange[0]);
+      const duration = durationRange[0] + Math.random() * (durationRange[1]-durationRange[0]);
+
       s.animate([
         { transform: "translate(0px,0px)", opacity: parseFloat(s.style.opacity) },
-        { transform: `translate(${driftX}px, ${driftY}px)`, opacity: 0 }
+        { transform: `translate(${driftX}px, ${driftY}px) scale(${0.8 + Math.random()})`, opacity: 0 }
       ], { duration: duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
     }
 
-    setTimeout(() => cluster.remove(), 3000);
+    setTimeout(() => cluster.remove(), 4000); // slightly longer lifetime for cinematic clouds
   }
 }
 
