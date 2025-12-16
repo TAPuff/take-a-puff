@@ -293,14 +293,32 @@ body.zoom {
   animation-duration: 5s; /* floats longer */
 }
 
+/* PIXELATED SMOKE CURSOR TRAIL */
 .pixel-cursor {
-  width: 14px;
-  height: 14px;
-  background: #FF4FD8; /* main cursor pink */
+  width: 12px; 
+  height: 12px;
+  background: #FF4FD8; /* default trail pink */
   border-radius: 50%;
   position: fixed;
   pointer-events: none;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.8);
   z-index: 9999;
-  mix-blend-mode: difference; /* optional for glowing effect */
+  mix-blend-mode: screen; /* dreamy glow effect */
+  filter: blur(1px); /* soft smoke look */
+  image-rendering: pixelated;
+  opacity: 0.6;
+  transition: width 0.2s, height 0.2s, background 0.2s;
+}
+
+/* Optional: different sizes and opacities for clusters */
+.smoke {
+  border-radius: 50%; 
+  filter: blur(2px);
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  width: 16px;
+  height: 16px;
 }
