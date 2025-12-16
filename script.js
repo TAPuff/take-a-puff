@@ -1,4 +1,4 @@
-0;
+let count = 0;
 let smokeColor = '#ff7ac8';
 let soundOn = true;
 
