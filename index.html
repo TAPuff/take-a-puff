@@ -4,63 +4,71 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>TAKE A PUFF — $PUFF</title>
+
+
+<!-- PIXEL FONTS -->
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
 
+<!-- CRT OVERLAY -->
+<div class="crt"></div>
+
+
+<!-- MUTE -->
+<button id="mute">🔊</button>
+
+
 <header class="hero">
-<h1>TAKE A PUFF</h1>
+<h1 class="title">TAKE A PUFF</h1>
+<h2 class="ticker">$PUFF</h2>
 <p class="subtitle">click. inhale. vibe.</p>
 </header>
 
 
-<section class="vape-section">
-<img src="assets/vape.png" id="vape" alt="Pixel Vape" />
-<div id="smoke-container"></div>
-<div class="counter">PUFFS TAKEN: <span id="count">0</span></div>
+<section class="vape-wrap">
+<div class="vape-box">
+<img src="assets/vape.png" id="vape" />
+<div id="smoke-origin"></div>
+</div>
+<div class="counter">PUFFS: <span id="count">0</span></div>
 </section>
 
 
 <section class="flavors">
-<button data-color="#6ecbff">Blue Freeze</button>
-<button data-color="#ff6ec7">Strawberry Pop</button>
-<button data-color="#b48cff">Grape Drift</button>
-<button data-color="#ffd56e">Mango Static</button>
-<button data-color="#6effa1">Mint Glitch</button>
+<button data-color="#6ecbff">BLUE FREEZE</button>
+<button data-color="#ff7ac8">STRAWBERRY POP</button>
+<button data-color="#b68cff">GRAPE DRIFT</button>
+<button data-color="#ffd56e">MANGO STATIC</button>
+<button data-color="#6effa1">MINT GLITCH</button>
 </section>
 
 
 <section class="roadmap">
-<h2>ROADMAP</h2>
+<h3>ROADMAP</h3>
 <p class="swipe">← swipe →</p>
-<div class="roadmap-track">
-<div class="card">Phase 1 — Ignition<br>Launch • Website • Community</div>
-<div class="card">Phase 2 — Stabilization<br>Engagement • Transparency</div>
-<div class="card">Phase 3 — Expansion<br>Listings • Growth</div>
-<div class="card">Phase 4 — CEX Pathway<br>Liquidity • Applications<br><small title="Metrics-based CEX outreach once liquidity, volume, and holders justify listing.">ⓘ</small></div>
-<div class="card">Phase 5 — Long‑Term Vision<br>Sustainability</div>
+<div class="track">
+<div class="card">PHASE 1 — IGNITION<br><small>Launch • Website • Community</small></div>
+<div class="card">PHASE 2 — STABILIZATION<br><small>Engagement • Transparency</small></div>
+<div class="card">PHASE 3 — EXPANSION<br><small>Visibility • Listings</small></div>
+<div class="card">PHASE 4 — CEX PATHWAY<br><small title="Metrics-based exchange outreach">Liquidity • Applications ⓘ</small></div>
+<div class="card">PHASE 5 — LONG-TERM<br><small>Sustainability • Brand</small></div>
 </div>
 </section>
 
 
 <section class="socials">
 <a href="#">X</a>
-<a href="#">Discord</a>
-<a href="#">Pump.fun</a>
+<a href="#">DISCORD</a>
+<a href="#">PUMP.FUN</a>
 </section>
 
 
 <footer>
 <p>$PUFF is a meme coin. No nicotine. No guaranteed returns.</p>
 </footer>
-
-
-<audio id="sfxClick" src="assets/sfx-click.mp3"></audio>
-<audio id="sfxHover" src="assets/sfx-hover.mp3"></audio>
-<audio id="sfxFlavor" src="assets/sfx-flavor.mp3"></audio>
-
-
-<script src="script.js"></script>
-</body>
 </html>

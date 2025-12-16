@@ -1,12 +1,10 @@
-// ====== STATE ======
-let count = 0;
-let smokeColor = '#ff9ad5';
+0;
+let smokeColor = '#ff7ac8';
 let soundOn = true;
 
 
-// ====== ELEMENTS ======
 const vape = document.getElementById('vape');
-const container = document.getElementById('smoke-container');
+const origin = document.getElementById('smoke-origin');
 const countEl = document.getElementById('count');
 
 
@@ -15,60 +13,50 @@ const sfxHover = document.getElementById('sfxHover');
 const sfxFlavor = document.getElementById('sfxFlavor');
 
 
-// ====== SOUND HELPER ======
-function play(sound) {
-if (!soundOn) return;
-sound.currentTime = 0;
-sound.play();
-}
+function play(s){ if(soundOn){ s.currentTime=0; s.play(); }}
 
 
-// ====== VAPE CLICK ======
 vape.addEventListener('click', () => {
 play(sfxClick);
 count++;
 countEl.textContent = count;
 
 
-let particles = 12;
-
-
-if (count === 69) {
-particles = 24;
-}
-
-
-if (count === 420) {
-particles = 60;
-document.body.classList.add('hue');
-setTimeout(() => document.body.classList.remove('hue'), 800);
-}
-
-
-if (count === 666) {
-particles = 80;
-document.body.classList.add('glitch');
-setTimeout(() => document.body.classList.remove('glitch'), 800);
-}
-
-
-for (let i = 0; i < particles; i++) {
-createSmoke();
-}
+let amount = count>=420 ? 40 : 16;
+for(let i=0;i<amount;i++) spawnSmoke(origin);
 });
 
 
-vape.addEventListener('mouseenter', () => play(sfxHover));
+vape.addEventListener('mouseenter',()=>play(sfxHover));
 
 
-// ====== FLAVORS ======
-document.querySelectorAll('.flavors button').forEach(btn => {
-btn.addEventListener('click', () => {
+// flavors
+document.querySelectorAll('.flavors button').forEach(b=>{
+b.addEventListener('click',()=>{
+smokeColor = b.dataset.color;
 play(sfxFlavor);
-smokeColor = btn.dataset.color;
 });
 });
 
 
+// cursor trail
+window.addEventListener('mousemove',e=>{
+spawnSmoke(document.body,e.clientX,e.clientY,true);
 });
 
+
+function spawnSmoke(parent,x,y,isCursor=false){
+const s=document.createElement('div');
+s.className='smoke';
+s.style.background=smokeColor;
+s.style.left=(isCursor?x:0)+'px';
+s.style.top=(isCursor?y:0)+'px';
+s.style.setProperty('--x',(Math.random()*60-30)+'px');
+(isCursor?document.body:parent).appendChild(s);
+setTimeout(()=>s.remove(),3000);
+}
+
+
+// mute
+const mute=document.getElementById('mute');
+mute.onclick=()=>{ soundOn=!soundOn; mute.textContent=soundOn?'🔊':'🔇'; play(sfxHover); }
