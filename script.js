@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const smokeLayer = document.getElementById("smoke-layer");
   const flavorButtons = document.querySelectorAll("#flavors button");
   const shareBtn = document.getElementById("share-btn");
-  const shareGifBtn = document.getElementById("share-gif-btn");
 
   // ONE SET OF VARIABLES
   let puffCount = Number(localStorage.getItem("puffs")) || 0;
@@ -41,14 +40,10 @@ function screenZoom() {
 }
 
   // COUNTER ELEMENT
-  const counter = document.createElement("div");
-  counter.id = "counter";
-  updateCounter();
-  document.getElementById("vape-zone").appendChild(counter);
-
+  const counter = document.getElementById("counter");
   function updateCounter() {
-    counter.innerText = `PUFFS: ${puffCount}  |  LONG DRAGS: ${longDragCount}`;
-  }
+    counter.innerHTML = `PUFFS: ${puffCount} <br> LONG DRAGS: ${longDragCount}`;
+}
 
   // FLAVOR SELECTION
   flavorButtons.forEach(btn => {
@@ -69,8 +64,8 @@ function screenZoom() {
   for (let i = 0; i < count; i++) {
     const cluster = document.createElement("div");
     cluster.className = "smoke-cluster";
-    cluster.style.left = rect.left + rect.width / 2 + (Math.random() * 40 - 20) + "px";
-    cluster.style.top = rect.top - 10 + "px";
+    cluster.style.left = rect.left + rect.width * 0.52 + "px"; // slight right for mouthpiece
+    cluster.style.top = rect.top + rect.height * 0.05 + "px"; // near top of PNG
     cluster.style.opacity = 0.6 + Math.random() * 0.3;
     smokeLayer.appendChild(cluster);
 
@@ -252,78 +247,6 @@ if(hold > 2600){
     };
   });
 
-  // SHARE GIF
-  shareGifBtn.addEventListener("click",()=>{
-    const gif=new GIF({
-      workers:2,
-      quality:10,
-      width:window.innerWidth,
-      height:window.innerHeight,
-      workerScript:'https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js'
-    });
-
-    const duration=4000;
-    const frameRate=8;
-    const totalFrames=Math.floor(duration/(1000/frameRate));
-    let frame=0;
-
-    const canvas=document.createElement("canvas");
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-    const ctx=canvas.getContext("2d");
-
-    const vapeRect=vape.getBoundingClientRect();
-
-    function drawFrame(){
-      ctx.fillStyle="#FFB6D9";
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-
-      document.querySelectorAll(".smoke").forEach(s=>{
-        const rect=s.getBoundingClientRect();
-        ctx.fillStyle=s.style.background;
-        ctx.globalAlpha=parseFloat(s.style.opacity);
-        ctx.fillRect(rect.left,rect.top,parseFloat(s.style.width),parseFloat(s.style.height));
-        ctx.globalAlpha=1;
-      });
-
-      const img=new Image();
-      img.crossOrigin="anonymous";
-      img.src=vape.src;
-      img.onload=()=>ctx.drawImage(img,vapeRect.left,vapeRect.top,vapeRect.width,vapeRect.height);
-
-      ctx.fillStyle=smokeColor;
-      ctx.fillRect(10,10,18,18);
-
-      ctx.font="16px 'Press Start 2P'";
-      ctx.fillStyle="#FFD700";
-      ctx.fillText(`PUFFS: ${puffCount}`,10,50);
-      ctx.fillText(`LONG DRAGS: ${longDragCount}`,10,80);
-      if(secretUnlocked) ctx.fillText("💎 GOLDEN PUFF!",10,110);
-
-      if(dragging){
-        const offsetX=(Math.random()-0.5)*8;
-        const offsetY=(Math.random()-0.5)*8;
-        ctx.translate(offsetX,offsetY);
-      }
-
-      frame++;
-      gif.addFrame(ctx,{copy:true,delay:1000/frameRate});
-      if(frame<totalFrames) requestAnimationFrame(drawFrame);
-      else{
-        gif.on('finished',blob=>{
-          const url=URL.createObjectURL(blob);
-          const a=document.createElement('a');
-          a.href=url;
-          a.download=`PUFF_GIF_${Date.now()}.gif`;
-          a.click();
-          URL.revokeObjectURL(url);
-        });
-        gif.render();
-      }
-    }
-    drawFrame();
-  });
-
   // CURSOR + TRAIL
   const pixelCursor=document.createElement("div");
   pixelCursor.className="pixel-cursor";
@@ -341,4 +264,64 @@ if(hold > 2600){
     setTimeout(()=>trail.remove(),500);
   });
 
+});
+
+const sections = document.querySelectorAll("section");
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add("show");
+    }
+  });
+},{threshold: 0.2});
+
+sections.forEach(sec => observer.observe(sec));
+
+// ===== PIXEL CURSOR + SMOOTH TRAIL =====
+const pixelCursor = document.createElement("div");
+pixelCursor.className = "pixel-cursor";
+document.body.appendChild(pixelCursor);
+
+// Array to store trail elements
+const trailElements = [];
+const maxTrail = 15; // number of trail dots
+const trailSpacing = 2; // px offset per frame
+
+document.addEventListener("mousemove", e => {
+  // Move main cursor
+  pixelCursor.style.left = e.clientX + "px";
+  pixelCursor.style.top = e.clientY + "px";
+
+  // Add new trail element
+  const trail = document.createElement("div");
+  trail.className = "pixel-cursor";
+  trail.style.left = e.clientX + "px";
+  trail.style.top = e.clientY + "px";
+  trail.style.opacity = 0.6;
+  trail.style.background = "#FF4FD8"; // pink trail
+  trail.style.width = "12px";
+  trail.style.height = "12px";
+  trail.style.borderRadius = "50%";
+  trail.style.pointerEvents = "none";
+  trail.style.position = "fixed";
+  trail.style.transform = "translate(-50%, -50%) scale(0.8)";
+  document.body.appendChild(trail);
+  trailElements.push(trail);
+
+  // Animate trail fade
+  let alpha = 0.6;
+  const fade = setInterval(() => {
+    alpha -= 0.05;
+    if (alpha <= 0) {
+      trail.remove();
+      trailElements.shift();
+      clearInterval(fade);
+    } else trail.style.opacity = alpha;
+  }, 16);
+
+  // Keep trail array limited
+  if (trailElements.length > maxTrail) {
+    const old = trailElements.shift();
+    old.remove();
+  }
 });

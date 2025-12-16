@@ -111,10 +111,11 @@ h1 {
   margin-top: 16px;
   color: #ffffff; /* fixed for better contrast */
   text-shadow: 2px 2px 0 #ff00ff, -2px -2px 0 #ff00ff; /* pixel outline */
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 20;
+  position: relative; /* relative to vape-zone */
+  top: 0;
+  left: 0;
+  margin-top: 12px;
+  text-align: center;
 }
 
 #counter p {
@@ -294,4 +295,16 @@ body.zoom {
   height: 40px;
   opacity: 0.5;        /* slightly see-through */
   animation-duration: 5s; /* floats longer */
+}
+
+.pixel-cursor {
+  width: 14px;
+  height: 14px;
+  background: #FF4FD8; /* main cursor pink */
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+  mix-blend-mode: difference; /* optional for glowing effect */
 }
