@@ -27,51 +27,46 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===== SPAWN SMOKE =====
-  function spawnSmoke(hold, burst = false) {
-    const vapeRect = vape.getBoundingClientRect();
-    const layerRect = smokeLayer.getBoundingClientRect();
+function spawnSmoke(hold, burst = false) {
+  const vapeRect = vape.getBoundingClientRect();
+  const layerRect = smokeLayer.getBoundingClientRect();
+  const vapeX = vapeRect.left + vapeRect.width*0.52 - layerRect.left;
+  const vapeY = vapeRect.top + vapeRect.height*0.1 - layerRect.top;
 
-    // Vape tip relative to smoke-layer
-    const vapeX = vapeRect.left + vapeRect.width * 0.52 - layerRect.left;
-    const vapeY = vapeRect.top + vapeRect.height * 0.2 - layerRect.top;
+  const intensity = Math.min(hold / 600, 5);
+  const baseCount = burst ? 20 : 6;
+  const count = Math.floor(baseCount * intensity);
 
-    const intensity = Math.min(hold / 600, 5);
-    const baseCount = burst ? 20 : 6;
-    const count = Math.floor(baseCount * intensity);
+  for (let i=0; i<count; i++){
+    const smoke = document.createElement("div");
+    smoke.className = "pixel-cursor"; // use same style as cursor trail
+    smoke.style.left = vapeX + "px";
+    smoke.style.top = vapeY + "px";
+    smoke.style.width = (8 + Math.random()*12) + "px";
+    smoke.style.height = smoke.style.width;
+    smoke.style.background = smokeColor;
+    smoke.style.opacity = 0.4 + Math.random()*0.4;
+    smoke.style.filter = `blur(${1+Math.random()*2}px)`;
+    smoke.style.position = "absolute";
+    smokeLayer.appendChild(smoke);
 
-    for (let i = 0; i < count; i++) {
-      const cluster = document.createElement("div");
-      cluster.className = "smoke-cluster";
-      cluster.style.left = vapeX + "px";
-      cluster.style.top = vapeY + "px";
-      smokeLayer.appendChild(cluster);
+    // Animate float upwards like smoke
+    const driftX = (Math.random()-0.5)*40;
+    const driftY = -50 - Math.random()*80;
+    const duration = 2000 + Math.random()*2000;
 
-      const squares = 3 + Math.floor(Math.random() * 5);
-      for (let j = 0; j < squares; j++) {
-        const s = document.createElement("div");
-        s.className = "smoke";
-        const size = 8 + Math.random() * 24;
-        s.style.width = s.style.height = size + "px";
-        s.style.background = smokeColor;
-        s.style.left = Math.random() * 20 - 10 + "px";
-        s.style.top = Math.random() * 20 - 10 + "px";
-        s.style.opacity = 0.4 + Math.random() * 0.4;
+    smoke.animate([
+      { transform: `translate(0px,0px) scale(0.8)`, opacity: parseFloat(smoke.style.opacity) },
+      { transform: `translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
+    ], {
+      duration,
+      easing: "ease-out",
+      fill: "forwards"
+    });
 
-        cluster.appendChild(s);
-
-        const driftX = Math.random() * 120 - 60;
-        const driftY = -Math.random() * 200 - 80;
-        const duration = 2000 + Math.random() * 2000;
-
-        s.animate([
-          { transform: "translate(0,0) scale(0.8)", opacity: parseFloat(s.style.opacity) },
-          { transform: `translate(${driftX}px, ${driftY}px) scale(${1 + Math.random()})`, opacity: 0 }
-        ], { duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
-      }
-
-      setTimeout(() => cluster.remove(), 5000);
-    }
+    setTimeout(()=>smoke.remove(), duration+50);
   }
+}
 
   // ===== DRAG INTERACTIONS =====
   function startDrag(e) {
@@ -121,10 +116,29 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("long-drag-count").textContent = longDragCount;
   }
 
-  function screenZoom() {
-    document.body.classList.add("zoom");
-    setTimeout(() => document.body.classList.remove("zoom"), 150);
+ function screenZoom() {
+  const body = document.body;
+  body.classList.add("zoom");
+
+  // Quick shake for cinematic effect
+  const start = performance.now();
+  const duration = 150;
+  const amplitude = 6; 
+
+  function shakeFrame(time) {
+    const progress = (time - start)/duration;
+    if(progress < 1){
+      const x = (Math.random()-0.5)*amplitude;
+      const y = (Math.random()-0.5)*amplitude;
+      body.style.transform = `scale(1.02) translate(${x}px, ${y}px)`;
+      requestAnimationFrame(shakeFrame);
+    } else {
+      body.style.transform = "";
+      body.classList.remove("zoom");
+    }
   }
+  requestAnimationFrame(shakeFrame);
+}
 
   // ===== CURSOR TRAIL AS SMOKE =====
   const trailElements = [];
@@ -140,39 +154,58 @@ document.addEventListener("DOMContentLoaded", () => {
   cursorTrailLayer.style.zIndex = "9999";
   document.body.appendChild(cursorTrailLayer);
 
-  document.addEventListener("mousemove", e => {
-    const trail = document.createElement("div");
-    trail.className = "smoke";
-    const size = 8 + Math.random() * 16;
-    trail.style.width = trail.style.height = size + "px";
-    trail.style.background = smokeColor;
-    trail.style.opacity = 0.2 + Math.random() * 0.3;
-    trail.style.position = "fixed";
-    trail.style.left = e.clientX + "px";
-    trail.style.top = e.clientY + "px";
-    trail.style.transform = "translate(-50%, -50%) scale(0.8)";
-    cursorTrailLayer.appendChild(trail);
-    trailElements.push(trail);
+ // ===== PIXELATED SMOKE CURSOR TRAIL =====
+const trailElements = [];
+const maxTrail = 20; // more particles for smoother smoke
 
-    const driftX = Math.random() * 40 - 20;
-    const driftY = -Math.random() * 80 - 20;
-    const duration = 2000 + Math.random() * 2000;
+document.addEventListener("mousemove", e => {
+  // Main “cursor” stays invisible
+  let mainCursor = document.querySelector(".pixel-cursor.main");
+  if (!mainCursor) {
+    mainCursor = document.createElement("div");
+    mainCursor.className = "pixel-cursor main";
+    document.body.appendChild(mainCursor);
+  }
+  mainCursor.style.left = e.clientX + "px";
+  mainCursor.style.top = e.clientY + "px";
 
-    trail.animate([
-      { transform: "translate(0,0) scale(0.8)", opacity: parseFloat(trail.style.opacity) },
-      { transform: `translate(${driftX}px, ${driftY}px) scale(${1 + Math.random()})`, opacity: 0 }
-    ], { duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
+  // Spawn smoke trail particles
+  const trail = document.createElement("div");
+  trail.className = "pixel-cursor";
+  trail.style.left = e.clientX + "px";
+  trail.style.top = e.clientY + "px";
+  trail.style.background = smokeColor || "#FF4FD8"; // matches vape flavor
+  trail.style.width = (8 + Math.random() * 12) + "px"; // random size like smoke
+  trail.style.height = trail.style.width;
+  trail.style.opacity = 0.4 + Math.random() * 0.4;
+  trail.style.filter = `blur(${1 + Math.random()*2}px)`;
+  trail.style.transform = "translate(-50%, -50%) scale(0.8)";
+  document.body.appendChild(trail);
+  trailElements.push(trail);
 
-    setTimeout(() => {
-      trail.remove();
-      trailElements.shift();
-    }, 2200);
-
-    if (trailElements.length > maxTrail) {
-      const old = trailElements.shift();
-      old.remove();
-    }
+  // Animate trail float upwards
+  const driftX = (Math.random() - 0.5) * 20;
+  const driftY = -20 - Math.random() * 40;
+  trail.animate([
+    { transform: `translate(-50%, -50%) translate(0px,0px) scale(0.8)`, opacity: parseFloat(trail.style.opacity) },
+    { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
+  ], {
+    duration: 2000 + Math.random() * 2000,
+    easing: "ease-out",
+    fill: "forwards"
   });
+
+  // Remove old trails
+  if (trailElements.length > maxTrail) {
+    const old = trailElements.shift();
+    old.remove();
+  }
+
+  // Automatically remove after 4s (just in case)
+  setTimeout(() => {
+    if (trail.parentNode) trail.remove();
+  }, 4000);
+});
 
   // ===== SHARE PUFF SCORE =====
   shareBtn.addEventListener("click",()=> {
@@ -213,19 +246,29 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   });
 
-  // ===== SECRET FLAVOR =====
-  function unlockSecretFlavor() {
-    secretUnlocked = true;
-    localStorage.setItem("secret","true");
+  // ===== SECRET FLAVOR PERSISTENCE =====
+function unlockSecretFlavor(){
+  secretUnlocked = true;
+  localStorage.setItem("secret", "true");
+
+  // Show overlay only once per unlock
+  if (!document.getElementById("unlock-overlay")) {
     const overlay = document.createElement("div");
-    overlay.id = "unlock-overlay";
-    overlay.innerHTML = `<div id="unlock-box"><h2>SECRET FLAVOR</h2><p>💎 GOLDEN PUFF UNLOCKED</p></div>`;
+    overlay.id="unlock-overlay";
+    overlay.innerHTML=`
+      <div id="unlock-box">
+        <h2>SECRET FLAVOR</h2>
+        <p>💎 GOLDEN PUFF UNLOCKED</p>
+      </div>`;
     document.body.appendChild(overlay);
     setTimeout(()=>overlay.remove(),2000);
+  }
 
+  // Add button if not already in DOM
+  if (!document.querySelector("#flavors button[data-color='#FFD700']")) {
     const btn = document.createElement("button");
-    btn.innerText = "💎 GOLDEN PUFF";
-    btn.dataset.color = "#FFD700";
+    btn.innerText="💎 GOLDEN PUFF";
+    btn.dataset.color="#FFD700";
     btn.onclick = () => {
       document.querySelectorAll("#flavors button").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
@@ -233,6 +276,22 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     document.getElementById("flavors").appendChild(btn);
   }
+}
+
+// ===== ON PAGE LOAD: RESTORE SECRET + COUNTER =====
+document.addEventListener("DOMContentLoaded", () => {
+  // Restore puff counts
+  puffCount = Number(localStorage.getItem("puffs")) || 0;
+  longDragCount = Number(localStorage.getItem("longDrags")) || 0;
+  secretUnlocked = localStorage.getItem("secret") === "true";
+
+  document.getElementById("puff-count").textContent = puffCount;
+  document.getElementById("long-drag-count").textContent = longDragCount;
+
+  // Restore secret flavor if unlocked
+  if (secretUnlocked) unlockSecretFlavor();
+});
+
 
   // ===== COUGH EASTER EGG =====
   function triggerCough() {
