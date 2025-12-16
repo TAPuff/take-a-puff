@@ -61,8 +61,8 @@ function screenZoom() {
   const zoneRect = vapeZone.getBoundingClientRect();
 
   // Position relative to vape-zone
-  const vapeX = vape.offsetLeft + vape.width * 0.52; // mouthpiece X
-  const vapeY = vape.offsetTop + vape.height * 0.1;  // mouthpiece Y
+  const vapeX = vapeRect.left - zoneRect.left + vapeRect.width * 0.52;
+  const vapeY = vapeRect.top - zoneRect.top + vapeRect.height * 0.1;
 
   const intensity = Math.min(hold / 600, 5);
   const baseCount = burst ? 20 : 6;
@@ -71,8 +71,6 @@ function screenZoom() {
   for (let i = 0; i < count; i++) {
     const cluster = document.createElement("div");
     cluster.className = "smoke-cluster";
-
-    // position inside vape-zone
     cluster.style.position = "absolute";
     cluster.style.left = vapeX + "px";
     cluster.style.top = vapeY + "px";
@@ -131,7 +129,6 @@ function screenZoom() {
     setTimeout(() => cluster.remove(), 4000);
   }
 }
-
 
   function startDrag(e){
     e.preventDefault();
