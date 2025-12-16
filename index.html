@@ -1,74 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>TAKE A PUFF — $PUFF</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>TAKE A PUFF ($PUFF)</title>
 
+  <!-- PIXEL FONTS -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 
-<!-- PIXEL FONTS -->
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-
-
-<link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
+  <!-- CRT OVERLAY -->
+  <div id="crt"></div>
 
-<!-- CRT OVERLAY -->
-<div class="crt"></div>
+  <!-- BACKGROUND SMOKE -->
+  <div id="bg-smoke"></div>
 
+  <!-- HEADER -->
+  <header>
+    <h1>TAKE A PUFF</h1>
+    <span class="ticker">$PUFF</span>
+  </header>
 
-<!-- MUTE -->
-<button id="mute">🔊</button>
+  <!-- CENTER STAGE -->
+  <main>
+    <div id="vape-zone">
+      <div id="vape">
+        <div class="vape-body"></div>
+        <div class="vape-mouth"></div>
+      </div>
+      <p class="hint">CLICK TO PUFF</p>
+    </div>
 
+    <!-- FLAVORS -->
+    <div id="flavors">
+      <button data-color="#7df9ff">❄ BLUE FREEZE</button>
+      <button data-color="#ff4fd8" class="active">🍓 PINK RUSH</button>
+      <button data-color="#a855f7">🍇 GRAPE HAZE</button>
+      <button data-color="#6ee7b7">🌿 MINT CLOUD</button>
+      <button data-color="#ffb199">🍑 PEACH POP</button>
+    </div>
+  </main>
 
-<header class="hero">
-<h1 class="title">TAKE A PUFF</h1>
-<h2 class="ticker">$PUFF</h2>
-<p class="subtitle">click. inhale. vibe.</p>
-</header>
+  <!-- SECTIONS -->
+  <section>
+    <h2>WHAT IS $PUFF?</h2>
+    <p>A pixel-fueled vaporwave meme coin born from chaos, clicks, and clouds.</p>
+  </section>
 
+  <section>
+    <h2>TOKENOMICS</h2>
+    <p>Supply: 420,000,000,000<br>No taxes. Just vibes.</p>
+  </section>
 
-<section class="vape-wrap">
-<div class="vape-box">
-<img src="assets/vape.png" id="vape" />
-<div id="smoke-origin"></div>
-</div>
-<div class="counter">PUFFS: <span id="count">0</span></div>
-</section>
+  <section>
+    <h2>ROADMAP</h2>
+    <p>Phase 1: Puff<br>Phase 2: Puff harder<br>Phase 3: Full cloud takeover</p>
+  </section>
 
+  <section>
+    <h2>HOW TO BUY</h2>
+    <p>Buy. Hold. Puff. Repeat.</p>
+  </section>
 
-<section class="flavors">
-<button data-color="#6ecbff">BLUE FREEZE</button>
-<button data-color="#ff7ac8">STRAWBERRY POP</button>
-<button data-color="#b68cff">GRAPE DRIFT</button>
-<button data-color="#ffd56e">MANGO STATIC</button>
-<button data-color="#6effa1">MINT GLITCH</button>
-</section>
+  <!-- SMOKE LAYER -->
+  <div id="smoke-layer"></div>
 
-
-<section class="roadmap">
-<h3>ROADMAP</h3>
-<p class="swipe">← swipe →</p>
-<div class="track">
-<div class="card">PHASE 1 — IGNITION<br><small>Launch • Website • Community</small></div>
-<div class="card">PHASE 2 — STABILIZATION<br><small>Engagement • Transparency</small></div>
-<div class="card">PHASE 3 — EXPANSION<br><small>Visibility • Listings</small></div>
-<div class="card">PHASE 4 — CEX PATHWAY<br><small title="Metrics-based exchange outreach">Liquidity • Applications ⓘ</small></div>
-<div class="card">PHASE 5 — LONG-TERM<br><small>Sustainability • Brand</small></div>
-</div>
-</section>
-
-
-<section class="socials">
-<a href="#">X</a>
-<a href="#">DISCORD</a>
-<a href="#">PUMP.FUN</a>
-</section>
-
-
-<footer>
-<p>$PUFF is a meme coin. No nicotine. No guaranteed returns.</p>
-</footer>
+  <script src="script.js"></script>
+</body>
 </html>

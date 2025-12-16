@@ -1,67 +1,127 @@
-:root {
---pink: #ff7ac8;
---bg: #120015;
+* {
+  box-sizing: border-box;
+  image-rendering: pixelated;
 }
-
-
-* { box-sizing: border-box; }
-
 
 body {
-margin: 0;
-background: radial-gradient(circle at top, #2a0030, #120015);
-color: white;
-font-family: 'VT323', monospace;
-overflow-x: hidden;
+  margin: 0;
+  font-family: 'VT323', monospace;
+  background: #ff4fd8;
+  color: white;
+  overflow-x: hidden;
+  cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAF0lEQVQoU2NkYGD4z0AEYBxVSFUAAG0AAfM0e8QAAAAASUVORK5CYII='), auto;
 }
-
 
 /* CRT */
-.crt {
-pointer-events: none;
-position: fixed;
-inset: 0;
-background:
-repeating-linear-gradient(
-to bottom,
-rgba(255,255,255,0.04),
-rgba(255,255,255,0.04) 1px,
-transparent 1px,
-transparent 3px
-);
-animation: scan 6s linear infinite;
-z-index: 999;
-}
-@keyframes scan { from { background-position: 0 0; } to { background-position: 0 100%; } }
-
-
-#mute {
-position: fixed;
-top: 12px;
-right: 12px;
-z-index: 1000;
-background: rgba(255,255,255,0.2);
-border: none;
-color: white;
-font-size: 16px;
+#crt {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.15),
+    rgba(0,0,0,0.15) 1px,
+    transparent 2px
+  );
+  mix-blend-mode: overlay;
+  z-index: 999;
 }
 
-
-.hero {
-text-align: center;
-padding: 3rem 1rem 1rem;
+/* HEADER */
+header {
+  text-align: center;
+  padding: 20px;
 }
 
-
-.title {
-font-family: 'Press Start 2P';
-font-size: 2.2rem;
-animation: float 3s ease-in-out infinite;
+h1 {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 24px;
+  color: #fff;
+  text-shadow: 3px 3px #000;
 }
-
 
 .ticker {
-font-family: 'Press Start 2P';
-font-size: 3.4rem;
-color: var(--pink);
+  font-size: 28px;
+  color: #7df9ff;
+}
+
+/* VAPE */
+#vape-zone {
+  text-align: center;
+  margin-top: 40px;
+}
+
+#vape {
+  width: 120px;
+  margin: 0 auto;
+  cursor: pointer;
+}
+
+.vape-body {
+  width: 100%;
+  height: 180px;
+  background: #ff69eb;
+  border: 6px solid #000;
+}
+
+.vape-mouth {
+  width: 40px;
+  height: 20px;
+  background: #000;
+  margin: 0 auto;
+}
+
+/* FLAVORS */
+#flavors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+#flavors button {
+  font-family: 'Press Start 2P';
+  font-size: 10px;
+  padding: 10px;
+  background: #000;
+  color: white;
+  border: 3px solid #fff;
+  cursor: pointer;
+}
+
+#flavors button.active {
+  background: #fff;
+  color: #000;
+}
+
+/* SECTIONS */
+section {
+  padding: 30px;
+  text-align: center;
+}
+
+section h2 {
+  font-family: 'Press Start 2P';
+  font-size: 14px;
+}
+
+/* SMOKE */
+.smoke {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  opacity: 0.7;
+  animation: floatUp 3s linear forwards;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(-200px);
+    opacity: 0;
+  }
 }
