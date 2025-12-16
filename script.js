@@ -41,8 +41,8 @@ function screenZoom() {
 
   // COUNTER ELEMENT
   const counter = document.getElementById("counter");
-  function updateCounter() {
-    counter.innerHTML = `PUFFS: ${puffCount} <br> LONG DRAGS: ${longDragCount}`;
+  document.getElementById("puff-count").textContent = puffCount;
+  document.getElementById("long-drag-count").textContent = longDragCount;
 }
 
   // FLAVOR SELECTION
@@ -56,7 +56,14 @@ function screenZoom() {
 
   // VAPE INTERACTIONS
   function spawnSmoke(hold, burst = false) {
-  const rect = vape.getBoundingClientRect();
+  const vapeZone = document.getElementById("vape-zone");
+  const vapeRect = vape.getBoundingClientRect();
+  const zoneRect = vapeZone.getBoundingClientRect();
+
+  // Position relative to vape-zone
+  const vapeX = vape.offsetLeft + vape.width * 0.52; // mouthpiece X
+  const vapeY = vape.offsetTop + vape.height * 0.1;  // mouthpiece Y
+
   const intensity = Math.min(hold / 600, 5);
   const baseCount = burst ? 20 : 6;
   const count = Math.floor(baseCount * intensity);
@@ -64,12 +71,15 @@ function screenZoom() {
   for (let i = 0; i < count; i++) {
     const cluster = document.createElement("div");
     cluster.className = "smoke-cluster";
-    cluster.style.left = rect.left + rect.width * 0.52 + "px"; // slight right for mouthpiece
-    cluster.style.top = rect.top + rect.height * 0.05 + "px"; // near top of PNG
-    cluster.style.opacity = 0.6 + Math.random() * 0.3;
-    smokeLayer.appendChild(cluster);
 
-    // Determine puff type
+    // position inside vape-zone
+    cluster.style.position = "absolute";
+    cluster.style.left = vapeX + "px";
+    cluster.style.top = vapeY + "px";
+    cluster.style.opacity = 0.6 + Math.random() * 0.3;
+
+    vapeZone.appendChild(cluster);
+
     const puffTypeRand = Math.random();
     let squares, sizeRange, driftRange, durationRange, opacityRange;
 
@@ -85,7 +95,7 @@ function screenZoom() {
       driftRange = [80, 160];
       durationRange = [2000, 3000];
       opacityRange = [0.5, 0.7];
-    } else { // Cinematic puff (for long drags)
+    } else { // Cinematic puff
       squares = 8 + Math.floor(Math.random() * 6);
       sizeRange = [12, 28];
       driftRange = [120, 240];
@@ -100,25 +110,28 @@ function screenZoom() {
       s.style.width = s.style.height = size + "px";
       s.style.background = smokeColor;
       s.style.position = "absolute";
+
+      // slight random offset inside cluster
       s.style.left = Math.random() * 30 - 15 + "px";
       s.style.top = Math.random() * 30 - 15 + "px";
       s.style.opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
+
       cluster.appendChild(s);
 
-      // cinematic drift
       const driftX = Math.random() * driftRange[1] - driftRange[1]/2;
       const driftY = -driftRange[0] - Math.random() * (driftRange[1]-driftRange[0]);
       const duration = durationRange[0] + Math.random() * (durationRange[1]-durationRange[0]);
 
       s.animate([
-        { transform: "translate(0px,0px)", opacity: parseFloat(s.style.opacity) },
+        { transform: "translate(0px,0px) scale(0.8)", opacity: parseFloat(s.style.opacity) },
         { transform: `translate(${driftX}px, ${driftY}px) scale(${0.8 + Math.random()})`, opacity: 0 }
       ], { duration: duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
     }
 
-    setTimeout(() => cluster.remove(), 4000); // slightly longer lifetime for cinematic clouds
+    setTimeout(() => cluster.remove(), 4000);
   }
 }
+
 
   function startDrag(e){
     e.preventDefault();
@@ -247,25 +260,6 @@ if(hold > 2600){
     };
   });
 
-  // CURSOR + TRAIL
-  const pixelCursor=document.createElement("div");
-  pixelCursor.className="pixel-cursor";
-  document.body.appendChild(pixelCursor);
-  document.addEventListener("mousemove",e=>{
-    pixelCursor.style.left=e.clientX+"px";
-    pixelCursor.style.top=e.clientY+"px";
-
-    const trail=document.createElement("div");
-    trail.className="pixel-cursor";
-    trail.style.left=e.clientX+"px";
-    trail.style.top=e.clientY+"px";
-    trail.style.opacity=0.5;
-    document.body.appendChild(trail);
-    setTimeout(()=>trail.remove(),500);
-  });
-
-});
-
 const sections = document.querySelectorAll("section");
 const observer = new IntersectionObserver(entries => {
   entries.forEach(entry => {
@@ -282,10 +276,8 @@ const pixelCursor = document.createElement("div");
 pixelCursor.className = "pixel-cursor";
 document.body.appendChild(pixelCursor);
 
-// Array to store trail elements
 const trailElements = [];
-const maxTrail = 15; // number of trail dots
-const trailSpacing = 2; // px offset per frame
+const maxTrail = 15;
 
 document.addEventListener("mousemove", e => {
   // Move main cursor
@@ -298,7 +290,7 @@ document.addEventListener("mousemove", e => {
   trail.style.left = e.clientX + "px";
   trail.style.top = e.clientY + "px";
   trail.style.opacity = 0.6;
-  trail.style.background = "#FF4FD8"; // pink trail
+  trail.style.background = "#FF4FD8"; 
   trail.style.width = "12px";
   trail.style.height = "12px";
   trail.style.borderRadius = "50%";

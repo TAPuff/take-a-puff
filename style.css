@@ -108,14 +108,10 @@ h1 {
 #counter {
   font-family: 'Press Start 2P';
   font-size: 14px;
-  margin-top: 16px;
+  margin: 16px auto 0 auto; /* centered below vape */
   color: #ffffff; /* fixed for better contrast */
   text-shadow: 2px 2px 0 #ff00ff, -2px -2px 0 #ff00ff; /* pixel outline */
   position: relative; /* relative to vape-zone */
-  top: 0;
-  left: 0;
-  margin-top: 12px;
-  text-align: center;
 }
 
 #counter p {
