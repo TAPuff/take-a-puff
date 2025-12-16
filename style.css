@@ -173,4 +173,28 @@ h1 {
 section {
   text-align: center;
   padding: 40px 20px;
-  opaci
+  opacity: 0;
+}
+  to {
+    transform: translate(var(--drift), -320px) scale(1.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate(var(--drift), -320px) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* SECTIONS */
+section {
+  text-align: center;
+  padding: 40px 20px;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+section.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all .5s steps(2);
+}
