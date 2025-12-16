@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const flavorButtons = document.querySelectorAll("#flavors button");
   const shareBtn = document.getElementById("share-btn");
 
-  // ONE SET OF VARIABLES
   let puffCount = Number(localStorage.getItem("puffs")) || 0;
   let longDragCount = Number(localStorage.getItem("longDrags")) || 0;
   let secretUnlocked = localStorage.getItem("secret") === "true";
@@ -14,36 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let overpuff = 0;
   let smokeColor = "#FF4FD8";
 
-  // SCREEN ZOOM EFFECT FOR CINEMATIC CLOUD
-function screenZoom() {
-  const body = document.body;
-  body.classList.add("zoom");
-
-  // Add a quick shake
-  const start = performance.now();
-  const duration = 150;
-  const amplitude = 6; // shake distance in px
-
-  function shakeFrame(time) {
-    const progress = (time - start) / duration;
-    if (progress < 1) {
-      const x = (Math.random() - 0.5) * amplitude;
-      const y = (Math.random() - 0.5) * amplitude;
-      body.style.transform = `scale(1.02) translate(${x}px, ${y}px)`;
-      requestAnimationFrame(shakeFrame);
-    } else {
-      body.style.transform = ""; // reset
-      body.classList.remove("zoom");
-    }
-  }
-  requestAnimationFrame(shakeFrame);
-}
-
-  // COUNTER ELEMENT
+  // COUNTER
   const counter = document.getElementById("counter");
   document.getElementById("puff-count").textContent = puffCount;
   document.getElementById("long-drag-count").textContent = longDragCount;
-}
 
   // FLAVOR SELECTION
   flavorButtons.forEach(btn => {
@@ -54,138 +27,131 @@ function screenZoom() {
     });
   });
 
-  // VAPE INTERACTIONS
-function spawnSmoke(hold, burst = false) {
-  const vapeZone = document.getElementById("vape-zone");
-  const vapeRect = vape.getBoundingClientRect();
-  const smokeLayer = document.getElementById("smoke-layer");
-  const layerRect = smokeLayer.getBoundingClientRect();
+  // ===== SMOKE SPAWN =====
+  function spawnSmoke(hold, burst = false) {
+    const vapeRect = vape.getBoundingClientRect();
+    const layerRect = smokeLayer.getBoundingClientRect();
 
-  // Vape tip coordinates relative to smoke-layer
-  const vapeX = vapeRect.left + vapeRect.width * 0.52 - layerRect.left;
-  const vapeY = vapeRect.top + vapeRect.height * 0.1 - layerRect.top;
+    // Vape tip coordinates relative to smokeLayer
+    const vapeX = vapeRect.left + vapeRect.width * 0.52 - layerRect.left;
+    const vapeY = vapeRect.top + vapeRect.height * 0.1 - layerRect.top;
 
-  const intensity = Math.min(hold / 600, 5);
-  const baseCount = burst ? 20 : 6;
-  const count = Math.floor(baseCount * intensity);
+    const intensity = Math.min(hold / 600, 5);
+    const baseCount = burst ? 20 : 6;
+    const count = Math.floor(baseCount * intensity);
 
-  for (let i = 0; i < count; i++) {
-    const cluster = document.createElement("div");
-    cluster.className = "smoke-cluster";
-    cluster.style.position = "absolute";
-    cluster.style.left = vapeX + "px";
-    cluster.style.top = vapeY + "px";
-    cluster.style.opacity = 0.6 + Math.random() * 0.3;
+    for (let i = 0; i < count; i++) {
+      const cluster = document.createElement("div");
+      cluster.className = "smoke-cluster";
+      cluster.style.position = "absolute";
+      cluster.style.left = vapeX + "px";
+      cluster.style.top = vapeY + "px";
+      cluster.style.opacity = 0.6 + Math.random() * 0.3;
+      smokeLayer.appendChild(cluster);
 
-    smokeLayer.appendChild(cluster);
+      const puffTypeRand = Math.random();
+      let squares, sizeRange, driftRange, durationRange, opacityRange;
 
-    const puffTypeRand = Math.random();
-    let squares, sizeRange, driftRange, durationRange, opacityRange;
+      if (puffTypeRand < 0.4) {
+        squares = 2 + Math.floor(Math.random() * 3);
+        sizeRange = [4, 8];
+        driftRange = [40, 120];
+        durationRange = [1500, 2500];
+        opacityRange = [0.3, 0.5];
+      } else if (puffTypeRand < 0.85) {
+        squares = 5 + Math.floor(Math.random() * 6);
+        sizeRange = [8, 14];
+        driftRange = [80, 160];
+        durationRange = [2000, 3000];
+        opacityRange = [0.5, 0.7];
+      } else {
+        squares = 8 + Math.floor(Math.random() * 6);
+        sizeRange = [12, 28];
+        driftRange = [120, 240];
+        durationRange = [2500, 4000];
+        opacityRange = [0.55, 0.85];
+      }
 
-    if (puffTypeRand < 0.4) {
-      squares = 2 + Math.floor(Math.random() * 3);
-      sizeRange = [4, 8];
-      driftRange = [40, 120];
-      durationRange = [1500, 2500];
-      opacityRange = [0.3, 0.5];
-    } else if (puffTypeRand < 0.85) {
-      squares = 5 + Math.floor(Math.random() * 6);
-      sizeRange = [8, 14];
-      driftRange = [80, 160];
-      durationRange = [2000, 3000];
-      opacityRange = [0.5, 0.7];
-    } else {
-      squares = 8 + Math.floor(Math.random() * 6);
-      sizeRange = [12, 28];
-      driftRange = [120, 240];
-      durationRange = [2500, 4000];
-      opacityRange = [0.55, 0.85];
+      for (let j = 0; j < squares; j++) {
+        const s = document.createElement("div");
+        s.className = "smoke";
+        const size = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
+        s.style.width = s.style.height = size + "px";
+        s.style.background = smokeColor;
+        s.style.position = "absolute";
+        s.style.left = Math.random() * 20 - 10 + "px";
+        s.style.top = Math.random() * 20 - 10 + "px";
+        s.style.opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
+
+        cluster.appendChild(s);
+
+        const driftX = Math.random() * driftRange[1] - driftRange[1]/2;
+        const driftY = -driftRange[0] - Math.random() * (driftRange[1]-driftRange[0]);
+        const duration = durationRange[0] + Math.random() * (durationRange[1]-durationRange[0]);
+
+        s.animate([
+          { transform: "translate(0,0) scale(0.8)", opacity: parseFloat(s.style.opacity) },
+          { transform: `translate(${driftX}px, ${driftY}px) scale(${0.8 + Math.random()})`, opacity: 0 }
+        ], { duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
+      }
+
+      setTimeout(() => cluster.remove(), 4000);
     }
-
-    for (let j = 0; j < squares; j++) {
-      const s = document.createElement("div");
-      s.className = "smoke";
-      const size = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
-      s.style.width = s.style.height = size + "px";
-      s.style.background = smokeColor;
-      s.style.position = "absolute";
-
-      // Slight random offset inside cluster
-      s.style.left = Math.random() * 20 - 10 + "px";
-      s.style.top = Math.random() * 20 - 10 + "px";
-      s.style.opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
-
-      cluster.appendChild(s);
-
-      const driftX = Math.random() * driftRange[1] - driftRange[1]/2;
-      const driftY = -driftRange[0] - Math.random() * (driftRange[1]-driftRange[0]);
-      const duration = durationRange[0] + Math.random() * (durationRange[1]-durationRange[0]);
-
-      s.animate([
-        { transform: "translate(0px,0px) scale(0.8)", opacity: parseFloat(s.style.opacity) },
-        { transform: `translate(${driftX}px, ${driftY}px) scale(${0.8 + Math.random()})`, opacity: 0 }
-      ], { duration: duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
-    }
-
-    setTimeout(() => cluster.remove(), 4000);
   }
-}
 
-
-  function startDrag(e){
+  // ===== DRAG INTERACTIONS =====
+  function startDrag(e) {
     e.preventDefault();
     dragging = true;
     dragStart = performance.now();
-    interval = setInterval(()=>{
+    interval = setInterval(() => {
       spawnSmoke(performance.now() - dragStart);
-    },140);
+    }, 140);
   }
 
-  function endDrag(){
-    if(!dragging) return;
+  function endDrag() {
+    if (!dragging) return;
     dragging = false;
     clearInterval(interval);
 
     const hold = performance.now() - dragStart;
     puffCount++;
     localStorage.setItem("puffs", puffCount);
-    if(hold>=1800){
+    if (hold >= 1800) {
       longDragCount++;
       localStorage.setItem("longDrags", longDragCount);
     }
 
-    spawnSmoke(hold*1.6,true);
+    spawnSmoke(hold * 1.6, true);
 
-    // ===== EXTRA CINEMATIC CLOUD FOR REALLY LONG DRAG =====
-  if (hold > 2500) {
-    for (let i = 0; i < 3; i++) { // spawn 3 extra massive clusters
-      setTimeout(() => spawnSmoke(hold*2, true), i*200);
+    // Extra cinematic clouds
+    if (hold > 2500) {
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => spawnSmoke(hold * 2, true), i * 200);
+      }
+      screenZoom();
     }
-    screenZoom(); // shake/zoom effect
-  }
 
     updateCounter();
 
-    if(puffCount>=100 && !secretUnlocked) unlockSecretFlavor();
-    if(hold > 2500){
-  // Spawn 3 extra massive smoke clusters
-  for(let i = 0; i < 3; i++){
-    setTimeout(() => spawnSmoke(hold*2, true), i * 200);
-  }
-  screenZoom(); // screen shake for cinematic effect
-}
+    if (puffCount >= 100 && !secretUnlocked) unlockSecretFlavor();
 
-// Handle coughing like before
-if(hold > 2600){
-  overpuff++;
-  if(overpuff >= 3) triggerCough();
-} else overpuff = 0;
+    if (hold > 2600) {
+      overpuff++;
+      if (overpuff >= 3) triggerCough();
+    } else overpuff = 0;
   }
 
   vape.addEventListener("mousedown", startDrag);
-  vape.addEventListener("touchstart", startDrag,{passive:false});
+  vape.addEventListener("touchstart", startDrag, { passive: false });
   window.addEventListener("mouseup", endDrag);
   window.addEventListener("touchend", endDrag);
+
+  // ===== SCREEN ZOOM =====
+  function screenZoom() {
+    document.body.classList.add("zoom");
+    setTimeout(() => document.body.classList.remove("zoom"), 150);
+  }
 
   // SECRET FLAVOR
   function unlockSecretFlavor(){
