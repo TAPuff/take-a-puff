@@ -202,8 +202,112 @@ section.show {
 /* ================= MOBILE SAFARI FIX ================= */
 
 #vape {
-  -webkit-touch-callout: none; /* disables save image popup */
+  -webkit-touch-callout: none; /* iOS Safari: disable save image menu */
   -webkit-user-select: none;
   user-select: none;
-  touch-action: none; /* allows long press */
+  pointer-events: auto;
 }
+
+#counter {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  margin-top: 16px;
+  color: #ff77cc;
+  text-shadow: 0 0 8px #ff9adf;
+}
+
+#unlock-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 120, 190, 0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.4s ease;
+}
+
+#unlock-box {
+  background: #ffb6d9;
+  padding: 28px 34px;
+  border-radius: 18px;
+  font-family: 'Press Start 2P', monospace;
+  text-align: center;
+  box-shadow: 0 0 40px #ffd700;
+  animation: popIn 0.5s ease;
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.6); opacity: 0 }
+  100% { transform: scale(1); opacity: 1 }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+
+/* ================= PARTICLE BURSTS ================= */
+.particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  opacity: 0.8;
+  pointer-events: none;
+  animation: particleRise 0.8s ease-out forwards;
+}
+
+@keyframes particleRise {
+  0% { transform: translate(0,0) scale(0.6); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(1.2); opacity: 0; }
+}
+
+/* ================= SCREEN ZOOM ================= */
+body.zoom {
+  transform: scale(1.02);
+  transition: transform 0.15s ease;
+}
+
+/* ================= SECRET FLAVOR GOLDEN SMOKE ================= */
+#golden-smoke {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+#share-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  background: #ff77cc;
+  color: #fff;
+  border: 2px solid #ffd700;
+  padding: 6px 12px;
+  margin-top: 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-shadow: 0 0 4px #fff;
+  transition: transform 0.1s ease;
+}
+
+/* ================= SHARE GIF ================= */
+#share-btn:active {
+  transform: scale(0.95);
+}
+
+#share-gif-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  background: #ff77cc;
+  color: #fff;
+  border: 2px solid #FFD700;
+  padding: 6px 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-shadow: 0 0 4px #fff;
+  transition: transform 0.1s ease;
+}
+#share-gif-btn:active { transform: scale(0.95); }
