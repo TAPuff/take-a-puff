@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let overpuff = 0;
   let smokeColor = "#FF4FD8";
 
-  // COUNTER
   const counter = document.getElementById("counter");
   document.getElementById("puff-count").textContent = puffCount;
   document.getElementById("long-drag-count").textContent = longDragCount;
@@ -27,14 +26,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ===== SMOKE SPAWN =====
+  // ===== SPAWN SMOKE =====
   function spawnSmoke(hold, burst = false) {
     const vapeRect = vape.getBoundingClientRect();
     const layerRect = smokeLayer.getBoundingClientRect();
 
-    // Vape tip coordinates relative to smokeLayer
+    // Vape tip relative to smoke-layer
     const vapeX = vapeRect.left + vapeRect.width * 0.52 - layerRect.left;
-    const vapeY = vapeRect.top + vapeRect.height * 0.1 - layerRect.top;
+    const vapeY = vapeRect.top + vapeRect.height * 0.2 - layerRect.top;
 
     const intensity = Math.min(hold / 600, 5);
     const baseCount = burst ? 20 : 6;
@@ -43,59 +42,34 @@ document.addEventListener("DOMContentLoaded", () => {
     for (let i = 0; i < count; i++) {
       const cluster = document.createElement("div");
       cluster.className = "smoke-cluster";
-      cluster.style.position = "absolute";
       cluster.style.left = vapeX + "px";
       cluster.style.top = vapeY + "px";
-      cluster.style.opacity = 0.6 + Math.random() * 0.3;
       smokeLayer.appendChild(cluster);
 
-      const puffTypeRand = Math.random();
-      let squares, sizeRange, driftRange, durationRange, opacityRange;
-
-      if (puffTypeRand < 0.4) {
-        squares = 2 + Math.floor(Math.random() * 3);
-        sizeRange = [4, 8];
-        driftRange = [40, 120];
-        durationRange = [1500, 2500];
-        opacityRange = [0.3, 0.5];
-      } else if (puffTypeRand < 0.85) {
-        squares = 5 + Math.floor(Math.random() * 6);
-        sizeRange = [8, 14];
-        driftRange = [80, 160];
-        durationRange = [2000, 3000];
-        opacityRange = [0.5, 0.7];
-      } else {
-        squares = 8 + Math.floor(Math.random() * 6);
-        sizeRange = [12, 28];
-        driftRange = [120, 240];
-        durationRange = [2500, 4000];
-        opacityRange = [0.55, 0.85];
-      }
-
+      const squares = 3 + Math.floor(Math.random() * 5);
       for (let j = 0; j < squares; j++) {
         const s = document.createElement("div");
         s.className = "smoke";
-        const size = sizeRange[0] + Math.random() * (sizeRange[1] - sizeRange[0]);
+        const size = 8 + Math.random() * 24;
         s.style.width = s.style.height = size + "px";
         s.style.background = smokeColor;
-        s.style.position = "absolute";
         s.style.left = Math.random() * 20 - 10 + "px";
         s.style.top = Math.random() * 20 - 10 + "px";
-        s.style.opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
+        s.style.opacity = 0.4 + Math.random() * 0.4;
 
         cluster.appendChild(s);
 
-        const driftX = Math.random() * driftRange[1] - driftRange[1]/2;
-        const driftY = -driftRange[0] - Math.random() * (driftRange[1]-driftRange[0]);
-        const duration = durationRange[0] + Math.random() * (durationRange[1]-durationRange[0]);
+        const driftX = Math.random() * 120 - 60;
+        const driftY = -Math.random() * 200 - 80;
+        const duration = 2000 + Math.random() * 2000;
 
         s.animate([
           { transform: "translate(0,0) scale(0.8)", opacity: parseFloat(s.style.opacity) },
-          { transform: `translate(${driftX}px, ${driftY}px) scale(${0.8 + Math.random()})`, opacity: 0 }
+          { transform: `translate(${driftX}px, ${driftY}px) scale(${1 + Math.random()})`, opacity: 0 }
         ], { duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
       }
 
-      setTimeout(() => cluster.remove(), 4000);
+      setTimeout(() => cluster.remove(), 5000);
     }
   }
 
@@ -104,9 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     dragging = true;
     dragStart = performance.now();
-    interval = setInterval(() => {
-      spawnSmoke(performance.now() - dragStart);
-    }, 140);
+    interval = setInterval(() => spawnSmoke(performance.now() - dragStart), 140);
   }
 
   function endDrag() {
@@ -124,11 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     spawnSmoke(hold * 1.6, true);
 
-    // Extra cinematic clouds
     if (hold > 2500) {
-      for (let i = 0; i < 3; i++) {
-        setTimeout(() => spawnSmoke(hold * 2, true), i * 200);
-      }
+      for (let i = 0; i < 3; i++) setTimeout(() => spawnSmoke(hold * 2, true), i * 200);
       screenZoom();
     }
 
@@ -147,138 +116,140 @@ document.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("mouseup", endDrag);
   window.addEventListener("touchend", endDrag);
 
-  // ===== SCREEN ZOOM =====
+  function updateCounter() {
+    document.getElementById("puff-count").textContent = puffCount;
+    document.getElementById("long-drag-count").textContent = longDragCount;
+  }
+
   function screenZoom() {
     document.body.classList.add("zoom");
     setTimeout(() => document.body.classList.remove("zoom"), 150);
   }
 
-  // SECRET FLAVOR
-  function unlockSecretFlavor(){
-    secretUnlocked=true;
-    localStorage.setItem("secret","true");
-    const overlay = document.createElement("div");
-    overlay.id="unlock-overlay";
-    overlay.innerHTML=`
-      <div id="unlock-box">
-        <h2>SECRET FLAVOR</h2>
-        <p>💎 GOLDEN PUFF UNLOCKED</p>
-      </div>`;
-    document.body.appendChild(overlay);
+  // ===== CURSOR TRAIL AS SMOKE =====
+  const trailElements = [];
+  const maxTrail = 25;
 
-    setTimeout(()=>overlay.remove(),2000);
+  const cursorTrailLayer = document.createElement("div");
+  cursorTrailLayer.style.position = "fixed";
+  cursorTrailLayer.style.left = 0;
+  cursorTrailLayer.style.top = 0;
+  cursorTrailLayer.style.width = "100%";
+  cursorTrailLayer.style.height = "100%";
+  cursorTrailLayer.style.pointerEvents = "none";
+  cursorTrailLayer.style.zIndex = "9999";
+  document.body.appendChild(cursorTrailLayer);
 
-    const btn = document.createElement("button");
-    btn.innerText="💎 GOLDEN PUFF";
-    btn.dataset.color="#FFD700";
-    btn.onclick=()=>{
-      document.querySelectorAll("#flavors button").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      smokeColor="#FFD700";
-    };
-    document.getElementById("flavors").appendChild(btn);
-  }
+  document.addEventListener("mousemove", e => {
+    const trail = document.createElement("div");
+    trail.className = "smoke";
+    const size = 8 + Math.random() * 16;
+    trail.style.width = trail.style.height = size + "px";
+    trail.style.background = smokeColor;
+    trail.style.opacity = 0.2 + Math.random() * 0.3;
+    trail.style.position = "fixed";
+    trail.style.left = e.clientX + "px";
+    trail.style.top = e.clientY + "px";
+    trail.style.transform = "translate(-50%, -50%) scale(0.8)";
+    cursorTrailLayer.appendChild(trail);
+    trailElements.push(trail);
 
-  // COUGH EASTER EGG
-  function triggerCough(){
-    overpuff=0;
-    document.body.style.filter="contrast(1.4)";
-    setTimeout(()=>document.body.style.filter="",300);
-  }
+    const driftX = Math.random() * 40 - 20;
+    const driftY = -Math.random() * 80 - 20;
+    const duration = 2000 + Math.random() * 2000;
 
-  // SHARE PUFF SCORE
-  shareBtn.addEventListener("click",()=>{
-    const canvas=document.createElement("canvas");
-    canvas.width=window.innerWidth;
-    canvas.height=window.innerHeight;
-    const ctx=canvas.getContext("2d");
-    ctx.fillStyle="#FFB6D9";
+    trail.animate([
+      { transform: "translate(0,0) scale(0.8)", opacity: parseFloat(trail.style.opacity) },
+      { transform: `translate(${driftX}px, ${driftY}px) scale(${1 + Math.random()})`, opacity: 0 }
+    ], { duration, easing: "cubic-bezier(0.4,0,0.2,1)", fill: "forwards" });
+
+    setTimeout(() => {
+      trail.remove();
+      trailElements.shift();
+    }, 2200);
+
+    if (trailElements.length > maxTrail) {
+      const old = trailElements.shift();
+      old.remove();
+    }
+  });
+
+  // ===== SHARE PUFF SCORE =====
+  shareBtn.addEventListener("click",()=> {
+    const canvas = document.createElement("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#FFB6D9";
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    document.querySelectorAll(".smoke").forEach(s=>{
-      const rect=s.getBoundingClientRect();
-      ctx.fillStyle=s.style.background;
-      ctx.globalAlpha=parseFloat(s.style.opacity);
-      ctx.fillRect(rect.left,rect.top,parseFloat(s.style.width),parseFloat(s.style.height));
-      ctx.globalAlpha=1;
+    document.querySelectorAll(".smoke").forEach(s => {
+      const rect = s.getBoundingClientRect();
+      ctx.fillStyle = s.style.background;
+      ctx.globalAlpha = parseFloat(s.style.opacity);
+      ctx.fillRect(rect.left, rect.top, parseFloat(s.style.width), parseFloat(s.style.height));
+      ctx.globalAlpha = 1;
     });
 
-    const vapeRect=vape.getBoundingClientRect();
-    const img=new Image();
-    img.crossOrigin="anonymous";
-    img.src=vape.src;
-    img.onload=()=>{
-      ctx.drawImage(img,vapeRect.left,vapeRect.top,vapeRect.width,vapeRect.height);
-      ctx.font="20px 'Press Start 2P'";
-      ctx.fillStyle="#FFD700";
+    const vapeRect = vape.getBoundingClientRect();
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = vape.src;
+    img.onload = () => {
+      ctx.drawImage(img, vapeRect.left, vapeRect.top, vapeRect.width, vapeRect.height);
+      ctx.font = "20px 'Press Start 2P'";
+      ctx.fillStyle = "#FFD700";
       ctx.fillText(`PUFFS: ${puffCount}`,20,40);
       ctx.fillText(`LONG DRAGS: ${longDragCount}`,20,70);
       if(secretUnlocked) ctx.fillText("💎 GOLDEN PUFF UNLOCKED!",20,100);
-      canvas.toBlob(blob=>{
-        const url=URL.createObjectURL(blob);
-        const a=document.createElement("a");
-        a.href=url;
-        a.download=`PUFF_SCORE_${Date.now()}.png`;
+      canvas.toBlob(blob => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `PUFF_SCORE_${Date.now()}.png`;
         a.click();
         URL.revokeObjectURL(url);
       });
     };
   });
 
-const sections = document.querySelectorAll("section");
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if(entry.isIntersecting){
-      entry.target.classList.add("show");
-    }
-  });
-},{threshold: 0.2});
+  // ===== SECRET FLAVOR =====
+  function unlockSecretFlavor() {
+    secretUnlocked = true;
+    localStorage.setItem("secret","true");
+    const overlay = document.createElement("div");
+    overlay.id = "unlock-overlay";
+    overlay.innerHTML = `<div id="unlock-box"><h2>SECRET FLAVOR</h2><p>💎 GOLDEN PUFF UNLOCKED</p></div>`;
+    document.body.appendChild(overlay);
+    setTimeout(()=>overlay.remove(),2000);
 
-sections.forEach(sec => observer.observe(sec));
-
-// ===== PIXEL CURSOR + SMOOTH TRAIL =====
-const pixelCursor = document.createElement("div");
-pixelCursor.className = "pixel-cursor";
-document.body.appendChild(pixelCursor);
-
-const trailElements = [];
-const maxTrail = 15;
-
-document.addEventListener("mousemove", e => {
-  // Move main cursor
-  pixelCursor.style.left = e.clientX + "px";
-  pixelCursor.style.top = e.clientY + "px";
-
-  // Add new trail element
-  const trail = document.createElement("div");
-  trail.className = "pixel-cursor";
-  trail.style.left = e.clientX + "px";
-  trail.style.top = e.clientY + "px";
-  trail.style.opacity = 0.6;
-  trail.style.background = "#FF4FD8"; 
-  trail.style.width = "12px";
-  trail.style.height = "12px";
-  trail.style.borderRadius = "50%";
-  trail.style.pointerEvents = "none";
-  trail.style.position = "fixed";
-  trail.style.transform = "translate(-50%, -50%) scale(0.8)";
-  document.body.appendChild(trail);
-  trailElements.push(trail);
-
-  // Animate trail fade
-  let alpha = 0.6;
-  const fade = setInterval(() => {
-    alpha -= 0.05;
-    if (alpha <= 0) {
-      trail.remove();
-      trailElements.shift();
-      clearInterval(fade);
-    } else trail.style.opacity = alpha;
-  }, 16);
-
-  // Keep trail array limited
-  if (trailElements.length > maxTrail) {
-    const old = trailElements.shift();
-    old.remove();
+    const btn = document.createElement("button");
+    btn.innerText = "💎 GOLDEN PUFF";
+    btn.dataset.color = "#FFD700";
+    btn.onclick = () => {
+      document.querySelectorAll("#flavors button").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      smokeColor = "#FFD700";
+    };
+    document.getElementById("flavors").appendChild(btn);
   }
+
+  // ===== COUGH EASTER EGG =====
+  function triggerCough() {
+    overpuff = 0;
+    document.body.style.filter = "contrast(1.4)";
+    setTimeout(()=>document.body.style.filter="",300);
+  }
+
+  // ===== SECTION OBSERVER (unchanged) =====
+  const sections = document.querySelectorAll("section");
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add("show");
+      }
+    });
+  },{threshold: 0.2});
+
+  sections.forEach(sec => observer.observe(sec));
 });
