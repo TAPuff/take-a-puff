@@ -9,7 +9,6 @@
 
   <!-- PIXEL FONTS -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -33,7 +32,10 @@
       <p class="hint">CLICK TO PUFF</p>
 
       <!-- Puff & long drag counters -->
-    <div id="counter"></div>
+    <div id="counter">
+        <p>Puffs: <span id="puff-count">0</span></p>
+        <p>Long Drags: <span id="long-drag-count">0</span></p>
+      </div>
     
     <!-- FLAVORS -->
     <div id="flavors">
@@ -44,16 +46,16 @@
       <button data-color="#FFB199">🍑 PEACH POP</button>
     </div>
 
-  <!-- SHARE BUTTON -->
+  <!-- SHARE BUTTONS -->
   <button id="share-btn">📸 SHARE PUFF SCORE</button>
   <button id="share-gif-btn">🎞️ SHARE PUFF GIF</button>
 
-  <!-- SMOKE -->
-  <div id="smoke-layer"></div>
-  </div>
-</main>
+  <!-- SMOKE LAYER -->
+      <div id="smoke-layer"></div>
+    </div>
+  </main>
 
-  <!-- CONTENT -->
+  <!-- CONTENT SECTIONS -->
   <section class="glitch">
     <h2>WHAT IS $PUFF?</h2>
     <p>A pixelated vaporwave meme coin built for clicks, clouds, and chaos.</p>
