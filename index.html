@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TAKE A PUFF ($PUFF)</title>
 
   <!-- PIXEL FONTS -->
@@ -12,61 +12,58 @@
 </head>
 <body>
 
-  <!-- CRT OVERLAY -->
+  <!-- CRT + NOISE -->
   <div id="crt"></div>
+  <div id="noise"></div>
 
-  <!-- BACKGROUND SMOKE -->
+  <!-- BACKGROUND -->
   <div id="bg-smoke"></div>
 
-  <!-- HEADER -->
   <header>
     <h1>TAKE A PUFF</h1>
     <span class="ticker">$PUFF</span>
   </header>
 
-  <!-- CENTER STAGE -->
   <main>
+    <!-- VAPE -->
     <div id="vape-zone">
-      <div id="vape">
-        <div class="vape-body"></div>
-        <div class="vape-mouth"></div>
-      </div>
+      <img id="vape" src="images/vape.png" alt="Vape">
       <p class="hint">CLICK TO PUFF</p>
     </div>
 
     <!-- FLAVORS -->
     <div id="flavors">
-      <button data-color="#7df9ff">❄ BLUE FREEZE</button>
-      <button data-color="#ff4fd8" class="active">🍓 PINK RUSH</button>
-      <button data-color="#a855f7">🍇 GRAPE HAZE</button>
-      <button data-color="#6ee7b7">🌿 MINT CLOUD</button>
-      <button data-color="#ffb199">🍑 PEACH POP</button>
+      <button data-color="#7DF9FF">❄ BLUE FREEZE</button>
+      <button data-color="#FF4FD8" class="active">🍓 PINK RUSH</button>
+      <button data-color="#C084FC">🍇 GRAPE HAZE</button>
+      <button data-color="#6EE7B7">🌿 MINT CLOUD</button>
+      <button data-color="#FFB199">🍑 PEACH POP</button>
     </div>
   </main>
 
-  <!-- SECTIONS -->
-  <section>
-    <h2>WHAT IS $PUFF?</h2>
-    <p>A pixel-fueled vaporwave meme coin born from chaos, clicks, and clouds.</p>
-  </section>
-
-  <section>
-    <h2>TOKENOMICS</h2>
-    <p>Supply: 420,000,000,000<br>No taxes. Just vibes.</p>
-  </section>
-
-  <section>
-    <h2>ROADMAP</h2>
-    <p>Phase 1: Puff<br>Phase 2: Puff harder<br>Phase 3: Full cloud takeover</p>
-  </section>
-
-  <section>
-    <h2>HOW TO BUY</h2>
-    <p>Buy. Hold. Puff. Repeat.</p>
-  </section>
-
-  <!-- SMOKE LAYER -->
+  <!-- SMOKE -->
   <div id="smoke-layer"></div>
+
+  <!-- CONTENT -->
+  <section class="glitch">
+    <h2>WHAT IS $PUFF?</h2>
+    <p>A pixelated vaporwave meme coin built for clicks, clouds, and chaos.</p>
+  </section>
+
+  <section class="glitch">
+    <h2>TOKENOMICS</h2>
+    <p>420,000,000,000 supply<br>No tax. Just puff.</p>
+  </section>
+
+  <section class="glitch">
+    <h2>ROADMAP</h2>
+    <p>Phase 1: Puff<br>Phase 2: Cloud<br>Phase 3: Total Fog</p>
+  </section>
+
+  <section class="glitch">
+    <h2>HOW TO BUY</h2>
+    <p>Buy → Hold → Puff → Repeat</p>
+  </section>
 
   <script src="script.js"></script>
 </body>
