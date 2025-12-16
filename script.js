@@ -55,14 +55,14 @@ function screenZoom() {
   });
 
   // VAPE INTERACTIONS
-  function spawnSmoke(hold, burst = false) {
+function spawnSmoke(hold, burst = false) {
   const vapeZone = document.getElementById("vape-zone");
   const vapeRect = vape.getBoundingClientRect();
   const zoneRect = vapeZone.getBoundingClientRect();
 
-  // Position relative to vape-zone
-  const vapeX = vapeRect.left - zoneRect.left + vapeRect.width * 0.52;
-  const vapeY = vapeRect.top - zoneRect.top + vapeRect.height * 0.1;
+  // Correct vape tip coordinates relative to vape-zone
+  const vapeX = vape.offsetLeft + vape.width * 0.52; // X inside vape-zone
+  const vapeY = vape.offsetTop + vape.height * 0.1;  // Y inside vape-zone
 
   const intensity = Math.min(hold / 600, 5);
   const baseCount = burst ? 20 : 6;
@@ -81,19 +81,19 @@ function screenZoom() {
     const puffTypeRand = Math.random();
     let squares, sizeRange, driftRange, durationRange, opacityRange;
 
-    if (puffTypeRand < 0.4) { // Tiny puff
+    if (puffTypeRand < 0.4) {
       squares = 2 + Math.floor(Math.random() * 3);
       sizeRange = [4, 8];
       driftRange = [40, 120];
       durationRange = [1500, 2500];
       opacityRange = [0.3, 0.5];
-    } else if (puffTypeRand < 0.85) { // Normal puff
+    } else if (puffTypeRand < 0.85) {
       squares = 5 + Math.floor(Math.random() * 6);
       sizeRange = [8, 14];
       driftRange = [80, 160];
       durationRange = [2000, 3000];
       opacityRange = [0.5, 0.7];
-    } else { // Cinematic puff
+    } else {
       squares = 8 + Math.floor(Math.random() * 6);
       sizeRange = [12, 28];
       driftRange = [120, 240];
@@ -108,10 +108,8 @@ function screenZoom() {
       s.style.width = s.style.height = size + "px";
       s.style.background = smokeColor;
       s.style.position = "absolute";
-
-      // slight random offset inside cluster
-      s.style.left = Math.random() * 30 - 15 + "px";
-      s.style.top = Math.random() * 30 - 15 + "px";
+      s.style.left = Math.random() * 20 - 10 + "px"; // small random offset inside cluster
+      s.style.top = Math.random() * 20 - 10 + "px";
       s.style.opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
 
       cluster.appendChild(s);
