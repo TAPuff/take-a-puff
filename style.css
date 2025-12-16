@@ -8,27 +8,35 @@ body {
   font-family: 'VT323', monospace;
   background: linear-gradient(
     180deg,
-    #ffb3d9,
-    #ff69eb,
-    #ff4fd8,
+    #ffd1e8,
     #ff85c2,
-    #ffd1e8
+    #ff4fd8,
+    #ff69eb,
+    #ffb3d9
   );
   color: white;
   overflow-x: hidden;
   cursor: none;
 }
 
-/* ================= CRT + NOISE ================= */
+/* CLICK SAFETY */
+#crt, #noise, .bg-smoke, .star, #smoke-layer {
+  pointer-events: none;
+}
 
+header, #vape-zone, #flavors {
+  position: relative;
+  z-index: 50;
+}
+
+/* CRT */
 #crt {
   position: fixed;
   inset: 0;
-  pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(0,0,0,0.15),
-    rgba(0,0,0,0.15) 1px,
+    rgba(0,0,0,.18),
+    rgba(0,0,0,.18) 1px,
     transparent 2px
   );
   z-index: 999;
@@ -37,39 +45,41 @@ body {
 #noise {
   position: fixed;
   inset: 0;
-  pointer-events: none;
-  opacity: 0.06;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Crect width='1' height='1' fill='white'/%3E%3C/svg%3E");
-  animation: flicker 0.15s infinite;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect width='1' height='1' fill='white'/%3E%3C/svg%3E");
+  opacity: .05;
+  animation: flicker .15s infinite;
   z-index: 998;
 }
 
 @keyframes flicker {
-  0% { opacity: 0.04 }
-  50% { opacity: 0.08 }
-  100% { opacity: 0.04 }
+  0% { opacity: .04 }
+  50% { opacity: .08 }
+  100% { opacity: .04 }
 }
 
-/* ================= HEADER ================= */
-
+/* HEADER */
 header {
   text-align: center;
-  padding: 20px;
+  padding: 30px 10px 10px;
 }
 
 h1 {
   font-family: 'Press Start 2P';
-  font-size: 22px;
-  text-shadow: 3px 3px #000;
+  font-size: clamp(42px, 9vw, 78px);
+  letter-spacing: 6px;
+  text-shadow: 4px 4px #000, 10px 10px #ff4fd8;
+  margin: 0;
 }
 
 .ticker {
-  font-size: 28px;
+  font-size: clamp(32px, 6vw, 52px);
   color: #7DF9FF;
+  text-shadow: 3px 3px #000;
+  display: block;
+  margin-top: 8px;
 }
 
-/* ================= VAPE ================= */
-
+/* VAPE */
 #vape-zone {
   position: relative;
   text-align: center;
@@ -94,13 +104,20 @@ h1 {
   margin-top: 8px;
 }
 
-/* ================= FLAVORS ================= */
+/* PUFF COUNTER */
+#counter {
+  font-family: 'Press Start 2P';
+  font-size: 12px;
+  margin-top: 10px;
+  opacity: .8;
+}
 
+/* FLAVORS */
 #flavors {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin: 30px 10px;
 }
 
@@ -112,11 +129,6 @@ h1 {
   color: white;
   border: 3px solid white;
   cursor: pointer;
-  transition: transform 0.1s;
-}
-
-#flavors button:hover {
-  transform: translateY(-2px);
 }
 
 #flavors button:active {
@@ -125,108 +137,40 @@ h1 {
   color: black;
 }
 
-/* ================= SMOKE ================= */
+#flavors button:active {
+  transform: translateY(2px);
+}
 
+/* SMOKE */
 #smoke-layer {
   position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: 10;
 }
 
 .smoke {
   position: absolute;
-  width: 20px;
-  height: 20px;
-  opacity: 0.75;
-  animation: floatUp 3.8s ease-out forwards;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  opacity: .55;
+  filter: blur(1px);
+  animation: smokeFloat 4s ease-out forwards;
 }
 
-@keyframes floatUp {
+@keyframes smokeFloat {
   from {
-    transform: translateY(0) scale(1);
-    opacity: 0.9;
+    transform: translate(0,0) scale(.8);
+    opacity: .65;
   }
   to {
-    transform: translateY(-300px) scale(1.8);
+    transform: translate(var(--drift), -320px) scale(1.8);
     opacity: 0;
   }
 }
 
-/* ================= PARALLAX BACKGROUND SMOKE ================= */
-
-.bg-smoke {
-  position: fixed;
-  inset: 0;
-  background-size: 200px;
-  opacity: 0.12;
-  animation: drift 60s linear infinite;
-  z-index: 1;
-}
-
-.bg1 { background-image: radial-gradient(#ff69eb 20%, transparent 20%); }
-.bg2 { background-image: radial-gradient(#ffd1e8 20%, transparent 20%); animation-duration: 90s; }
-.bg3 { background-image: radial-gradient(#ff85c2 20%, transparent 20%); animation-duration: 120s; }
-
-@keyframes drift {
-  from { background-position: 0 0; }
-  to { background-position: 1000px 0; }
-}
-
-/* ================= PIXEL STARS ================= */
-
-.star {
-  position: fixed;
-  width: 4px;
-  height: 4px;
-  background: white;
-  opacity: 0.5;
-  animation: starFloat 12s linear infinite;
-  z-index: 2;
-}
-
-@keyframes starFloat {
-  from { transform: translateY(100vh); }
-  to { transform: translateY(-10px); }
-}
-
-/* ================= SECTIONS + GLITCH ================= */
-
+/* SECTIONS */
 section {
   text-align: center;
   padding: 40px 20px;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-section.show {
-  opacity: 1;
-  transform: translateY(0);
-  transition: all 0.5s steps(2);
-}
-
-section h2 {
-  font-family: 'Press Start 2P';
-  font-size: 14px;
-}
-
-/* ================= CLICK SAFETY ================= */
-
-/* Decorative layers NEVER capture clicks */
-#crt,
-#noise,
-.bg-smoke,
-.star,
-#smoke-layer {
-  pointer-events: none;
-}
-
-/* Interactive elements ALWAYS on top */
-header,
-#vape-zone,
-#vape,
-#flavors,
-#flavors button {
-  position: relative;
-  z-index: 50;
-}
+  opaci
