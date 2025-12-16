@@ -58,11 +58,12 @@ function screenZoom() {
 function spawnSmoke(hold, burst = false) {
   const vapeZone = document.getElementById("vape-zone");
   const vapeRect = vape.getBoundingClientRect();
-  const zoneRect = vapeZone.getBoundingClientRect();
+  const smokeLayer = document.getElementById("smoke-layer");
+  const layerRect = smokeLayer.getBoundingClientRect();
 
-  // Correct vape tip coordinates relative to vape-zone
-  const vapeX = vape.offsetLeft + vape.width * 0.52; // X inside vape-zone
-  const vapeY = vape.offsetTop + vape.height * 0.1;  // Y inside vape-zone
+  // Vape tip coordinates relative to smoke-layer
+  const vapeX = vapeRect.left + vapeRect.width * 0.52 - layerRect.left;
+  const vapeY = vapeRect.top + vapeRect.height * 0.1 - layerRect.top;
 
   const intensity = Math.min(hold / 600, 5);
   const baseCount = burst ? 20 : 6;
@@ -76,7 +77,7 @@ function spawnSmoke(hold, burst = false) {
     cluster.style.top = vapeY + "px";
     cluster.style.opacity = 0.6 + Math.random() * 0.3;
 
-    vapeZone.appendChild(cluster);
+    smokeLayer.appendChild(cluster);
 
     const puffTypeRand = Math.random();
     let squares, sizeRange, driftRange, durationRange, opacityRange;
@@ -108,7 +109,9 @@ function spawnSmoke(hold, burst = false) {
       s.style.width = s.style.height = size + "px";
       s.style.background = smokeColor;
       s.style.position = "absolute";
-      s.style.left = Math.random() * 20 - 10 + "px"; // small random offset inside cluster
+
+      // Slight random offset inside cluster
+      s.style.left = Math.random() * 20 - 10 + "px";
       s.style.top = Math.random() * 20 - 10 + "px";
       s.style.opacity = opacityRange[0] + Math.random() * (opacityRange[1] - opacityRange[0]);
 
@@ -127,6 +130,7 @@ function spawnSmoke(hold, burst = false) {
     setTimeout(() => cluster.remove(), 4000);
   }
 }
+
 
   function startDrag(e){
     e.preventDefault();
