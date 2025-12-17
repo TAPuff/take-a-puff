@@ -422,8 +422,13 @@ button.active {
 }
 
 #ca-btn {
-  background: #fff;
+  background: linear-gradient(90deg, #ff4fd8, #ff85c2, #ff69eb, #ff4fd8);
+  background-size: 300% 100%;
   color: #000;
+  border: 2px solid #000;
+  border-radius: 8px;
+  box-shadow: 0 0 20px rgba(255,105,235,0.9), 6px 6px 0 rgba(0,0,0,0.2);
+  animation: rainbowShimmer 2.2s ease-in-out infinite, trailPulse 2s ease-in-out infinite;
 }
 
 .social-btn {
@@ -629,6 +634,20 @@ button.active {
 }
 
 /* Additional vaporwave background */
+#dot-waves {
+  background-image:
+    radial-gradient(rgba(255,255,255,0.35) 1.2px, transparent 1.2px),
+    linear-gradient(135deg, rgba(125,249,255,0.3), rgba(153,69,255,0.35), rgba(255,105,235,0.25), rgba(125,249,255,0.3));
+  background-size: 6px 6px, 200% 200%;
+  background-blend-mode: overlay;
+  animation: waveShift 10s ease-in-out infinite;
+  opacity: 0.35;
+}
+@keyframes waveShift {
+  0% { background-position: 0 0, 0% 50%; }
+  50% { background-position: 0 0, 100% 50%; }
+  100% { background-position: 0 0, 0% 50%; }
+}
 #neon-grid {
   background-image:
     linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
