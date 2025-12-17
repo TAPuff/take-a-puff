@@ -286,7 +286,7 @@ body.zoom {
   position: absolute;
   width: 10px;
   height: 10px;
-  top: 38%;      /* roughly at mouth height, adjust until it looks right */
+  top: 35%;      /* roughly at mouth height, adjust until it looks right */
   left: 50%;
   transform: translateX(-50%);
   pointer-events: none;
