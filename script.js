@@ -4,9 +4,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const flavorButtons = document.querySelectorAll("#flavors button");
   const shareBtn = document.getElementById("share-btn");
 
+  // Restore puff counts & secret flavor on page load
   let puffCount = Number(localStorage.getItem("puffs")) || 0;
   let longDragCount = Number(localStorage.getItem("longDrags")) || 0;
   let secretUnlocked = localStorage.getItem("secret") === "true";
+
+  document.getElementById("puff-count").textContent = puffCount;
+  document.getElementById("long-drag-count").textContent = longDragCount;
+
+  // Unlock secret flavor if previously unlocked
+  if (secretUnlocked) unlockSecretFlavor();
+
   let dragging = false;
   let dragStart = null;
   let interval = null;
@@ -14,8 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
   let smokeColor = "#FF4FD8";
 
   const counter = document.getElementById("counter");
-  document.getElementById("puff-count").textContent = puffCount;
-  document.getElementById("long-drag-count").textContent = longDragCount;
+
+  // Create main cursor
+  const mainCursor = document.createElement("div");
+  mainCursor.className = "pixel-cursor main";
+  document.body.appendChild(mainCursor);
 
   // FLAVOR SELECTION
   flavorButtons.forEach(btn => {
@@ -27,46 +38,42 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ===== SPAWN SMOKE =====
-function spawnSmoke(hold, burst = false) {
-  const vapeRect = vape.getBoundingClientRect();
-  const layerRect = smokeLayer.getBoundingClientRect();
-  const vapeX = vapeRect.left + vapeRect.width*0.52 - layerRect.left;
-  const vapeY = vapeRect.top + vapeRect.height*0.1 - layerRect.top;
+  function spawnSmoke(hold, burst = false) {
+    const vapeRect = vape.getBoundingClientRect();
+    const vapeX = vapeRect.left + vapeRect.width*0.5;
+    const vapeY = vapeRect.top + vapeRect.height*0.1;
 
-  const intensity = Math.min(hold / 600, 5);
-  const baseCount = burst ? 20 : 6;
-  const count = Math.floor(baseCount * intensity);
+    const intensity = Math.min(hold / 600, 5);
+    const baseCount = burst ? 20 : 6;
+    const count = Math.floor(baseCount * intensity);
 
-  for (let i=0; i<count; i++){
-    const smoke = document.createElement("div");
-    smoke.className = "pixel-cursor"; // use same style as cursor trail
-    smoke.style.left = vapeX + "px";
-    smoke.style.top = vapeY + "px";
-    smoke.style.width = (8 + Math.random()*12) + "px";
-    smoke.style.height = smoke.style.width;
-    smoke.style.background = smokeColor;
-    smoke.style.opacity = 0.4 + Math.random()*0.4;
-    smoke.style.filter = `blur(${1+Math.random()*2}px)`;
-    smoke.style.position = "absolute";
-    smokeLayer.appendChild(smoke);
+    for (let i=0; i<count; i++){
+      const smoke = document.createElement("div");
+      smoke.className = "pixel-cursor";
+      smoke.style.left = vapeX + "px";
+      smoke.style.top = vapeY + "px";
+      smoke.style.width = (8 + Math.random()*12) + "px";
+      smoke.style.height = smoke.style.width;
+      smoke.style.background = smokeColor;
+      smoke.style.opacity = 0.4 + Math.random()*0.4;
+      smoke.style.filter = `blur(${1+Math.random()*2}px)`;
+      smoke.style.position = "fixed";
+      smoke.style.zIndex = 9999;
 
-    // Animate float upwards like smoke
-    const driftX = (Math.random()-0.5)*40;
-    const driftY = -50 - Math.random()*80;
-    const duration = 2000 + Math.random()*2000;
+      document.body.appendChild(smoke);
 
-    smoke.animate([
-      { transform: `translate(0px,0px) scale(0.8)`, opacity: parseFloat(smoke.style.opacity) },
-      { transform: `translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
-    ], {
-      duration,
-      easing: "ease-out",
-      fill: "forwards"
-    });
+      const driftX = (Math.random()-0.5)*40;
+      const driftY = -50 - Math.random()*80;
+      const duration = 2000 + Math.random()*2000;
 
-    setTimeout(()=>smoke.remove(), duration+50);
+      smoke.animate([
+        { transform: `translate(-50%, -50%) translate(0px,0px) scale(0.8)`, opacity: parseFloat(smoke.style.opacity) },
+        { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
+      ], { duration, easing:"ease-out", fill:"forwards" });
+
+      setTimeout(()=>smoke.remove(), duration+50);
+    }
   }
-}
 
   // ===== DRAG INTERACTIONS =====
   function startDrag(e) {
@@ -116,96 +123,74 @@ function spawnSmoke(hold, burst = false) {
     document.getElementById("long-drag-count").textContent = longDragCount;
   }
 
- function screenZoom() {
-  const body = document.body;
-  body.classList.add("zoom");
+  function screenZoom() {
+    const body = document.body;
+    body.classList.add("zoom");
 
-  // Quick shake for cinematic effect
-  const start = performance.now();
-  const duration = 150;
-  const amplitude = 6; 
+    const start = performance.now();
+    const duration = 150;
+    const amplitude = 6; 
 
-  function shakeFrame(time) {
-    const progress = (time - start)/duration;
-    if(progress < 1){
-      const x = (Math.random()-0.5)*amplitude;
-      const y = (Math.random()-0.5)*amplitude;
-      body.style.transform = `scale(1.02) translate(${x}px, ${y}px)`;
-      requestAnimationFrame(shakeFrame);
-    } else {
-      body.style.transform = "";
-      body.classList.remove("zoom");
+    function shakeFrame(time) {
+      const progress = (time - start)/duration;
+      if(progress < 1){
+        const x = (Math.random()-0.5)*amplitude;
+        const y = (Math.random()-0.5)*amplitude;
+        body.style.transform = `scale(1.02) translate(${x}px, ${y}px)`;
+        requestAnimationFrame(shakeFrame);
+      } else {
+        body.style.transform = "";
+        body.classList.remove("zoom");
+      }
     }
+    requestAnimationFrame(shakeFrame);
   }
-  requestAnimationFrame(shakeFrame);
-}
 
   // ===== CURSOR TRAIL AS SMOKE =====
   const trailElements = [];
   const maxTrail = 25;
 
-  const cursorTrailLayer = document.createElement("div");
-  cursorTrailLayer.style.position = "fixed";
-  cursorTrailLayer.style.left = 0;
-  cursorTrailLayer.style.top = 0;
-  cursorTrailLayer.style.width = "100%";
-  cursorTrailLayer.style.height = "100%";
-  cursorTrailLayer.style.pointerEvents = "none";
-  cursorTrailLayer.style.zIndex = "9999";
-  document.body.appendChild(cursorTrailLayer);
+  document.addEventListener("mousemove", e => {
+    // Update main cursor
+    mainCursor.style.left = e.clientX + "px";
+    mainCursor.style.top = e.clientY + "px";
 
- // ===== PIXELATED SMOKE CURSOR TRAIL =====
-const trailElements = [];
-const maxTrail = 20; // more particles for smoother smoke
+    // Spawn smoke trail particles
+    const trail = document.createElement("div");
+    trail.className = "pixel-cursor";
+    trail.style.left = e.clientX + "px";
+    trail.style.top = e.clientY + "px";
+    trail.style.background = smokeColor || "#FF4FD8";
+    trail.style.width = (8 + Math.random() * 12) + "px";
+    trail.style.height = trail.style.width;
+    trail.style.opacity = 0.4 + Math.random() * 0.4;
+    trail.style.filter = `blur(${1 + Math.random()*2}px)`;
+    trail.style.transform = "translate(-50%, -50%) scale(0.8)";
+    trail.style.position = "fixed";
+    trail.style.zIndex = 9999;
+    document.body.appendChild(trail);
+    trailElements.push(trail);
 
-document.addEventListener("mousemove", e => {
-  // Main “cursor” stays invisible
-  let mainCursor = document.querySelector(".pixel-cursor.main");
-  if (!mainCursor) {
-    mainCursor = document.createElement("div");
-    mainCursor.className = "pixel-cursor main";
-    document.body.appendChild(mainCursor);
-  }
-  mainCursor.style.left = e.clientX + "px";
-  mainCursor.style.top = e.clientY + "px";
+    const driftX = (Math.random() - 0.5) * 20;
+    const driftY = -20 - Math.random() * 40;
+    trail.animate([
+      { transform: `translate(-50%, -50%) translate(0px,0px) scale(0.8)`, opacity: parseFloat(trail.style.opacity) },
+      { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
+    ], {
+      duration: 2000 + Math.random() * 2000,
+      easing: "ease-out",
+      fill: "forwards"
+    });
 
-  // Spawn smoke trail particles
-  const trail = document.createElement("div");
-  trail.className = "pixel-cursor";
-  trail.style.left = e.clientX + "px";
-  trail.style.top = e.clientY + "px";
-  trail.style.background = smokeColor || "#FF4FD8"; // matches vape flavor
-  trail.style.width = (8 + Math.random() * 12) + "px"; // random size like smoke
-  trail.style.height = trail.style.width;
-  trail.style.opacity = 0.4 + Math.random() * 0.4;
-  trail.style.filter = `blur(${1 + Math.random()*2}px)`;
-  trail.style.transform = "translate(-50%, -50%) scale(0.8)";
-  document.body.appendChild(trail);
-  trailElements.push(trail);
+    if (trailElements.length > maxTrail) {
+      const old = trailElements.shift();
+      old.remove();
+    }
 
-  // Animate trail float upwards
-  const driftX = (Math.random() - 0.5) * 20;
-  const driftY = -20 - Math.random() * 40;
-  trail.animate([
-    { transform: `translate(-50%, -50%) translate(0px,0px) scale(0.8)`, opacity: parseFloat(trail.style.opacity) },
-    { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
-  ], {
-    duration: 2000 + Math.random() * 2000,
-    easing: "ease-out",
-    fill: "forwards"
+    setTimeout(() => {
+      if (trail.parentNode) trail.remove();
+    }, 4000);
   });
-
-  // Remove old trails
-  if (trailElements.length > maxTrail) {
-    const old = trailElements.shift();
-    old.remove();
-  }
-
-  // Automatically remove after 4s (just in case)
-  setTimeout(() => {
-    if (trail.parentNode) trail.remove();
-  }, 4000);
-});
 
   // ===== SHARE PUFF SCORE =====
   shareBtn.addEventListener("click",()=> {
@@ -247,51 +232,34 @@ document.addEventListener("mousemove", e => {
   });
 
   // ===== SECRET FLAVOR PERSISTENCE =====
-function unlockSecretFlavor(){
-  secretUnlocked = true;
-  localStorage.setItem("secret", "true");
+  function unlockSecretFlavor(){
+    secretUnlocked = true;
+    localStorage.setItem("secret", "true");
 
-  // Show overlay only once per unlock
-  if (!document.getElementById("unlock-overlay")) {
-    const overlay = document.createElement("div");
-    overlay.id="unlock-overlay";
-    overlay.innerHTML=`
-      <div id="unlock-box">
-        <h2>SECRET FLAVOR</h2>
-        <p>💎 GOLDEN PUFF UNLOCKED</p>
-      </div>`;
-    document.body.appendChild(overlay);
-    setTimeout(()=>overlay.remove(),2000);
+    if (!document.getElementById("unlock-overlay")) {
+      const overlay = document.createElement("div");
+      overlay.id="unlock-overlay";
+      overlay.innerHTML=`
+        <div id="unlock-box">
+          <h2>SECRET FLAVOR</h2>
+          <p>💎 GOLDEN PUFF UNLOCKED</p>
+        </div>`;
+      document.body.appendChild(overlay);
+      setTimeout(()=>overlay.remove(),2000);
+    }
+
+    if (!document.querySelector("#flavors button[data-color='#FFD700']")) {
+      const btn = document.createElement("button");
+      btn.innerText="💎 GOLDEN PUFF";
+      btn.dataset.color="#FFD700";
+      btn.onclick = () => {
+        document.querySelectorAll("#flavors button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        smokeColor = "#FFD700";
+      };
+      document.getElementById("flavors").appendChild(btn);
+    }
   }
-
-  // Add button if not already in DOM
-  if (!document.querySelector("#flavors button[data-color='#FFD700']")) {
-    const btn = document.createElement("button");
-    btn.innerText="💎 GOLDEN PUFF";
-    btn.dataset.color="#FFD700";
-    btn.onclick = () => {
-      document.querySelectorAll("#flavors button").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      smokeColor = "#FFD700";
-    };
-    document.getElementById("flavors").appendChild(btn);
-  }
-}
-
-// ===== ON PAGE LOAD: RESTORE SECRET + COUNTER =====
-document.addEventListener("DOMContentLoaded", () => {
-  // Restore puff counts
-  puffCount = Number(localStorage.getItem("puffs")) || 0;
-  longDragCount = Number(localStorage.getItem("longDrags")) || 0;
-  secretUnlocked = localStorage.getItem("secret") === "true";
-
-  document.getElementById("puff-count").textContent = puffCount;
-  document.getElementById("long-drag-count").textContent = longDragCount;
-
-  // Restore secret flavor if unlocked
-  if (secretUnlocked) unlockSecretFlavor();
-});
-
 
   // ===== COUGH EASTER EGG =====
   function triggerCough() {
@@ -300,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(()=>document.body.style.filter="",300);
   }
 
-  // ===== SECTION OBSERVER (unchanged) =====
+  // ===== SECTION OBSERVER =====
   const sections = document.querySelectorAll("section");
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
