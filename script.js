@@ -47,16 +47,25 @@ shareBtn.addEventListener("click", () => {
   shareArea.style.boxSizing = "border-box";
 
   // Clone vape zone
-  const clone = vapeZone.cloneNode(true);
-  clone.style.pointerEvents = "none";
-  shareArea.appendChild(clone);
+const clone = vapeZone.cloneNode(true);
+clone.classList.add("share-card");
+clone.style.pointerEvents = "none";
+clone.style.position = "relative"; // ensure image shows
+shareArea.appendChild(clone);
 
-  // Clone active smoke
-  document.querySelectorAll(".smoke").forEach(smoke => {
-    const s = smoke.cloneNode(true);
-    s.style.position = "absolute";
-    shareArea.appendChild(s);
-  });
+// clone current smoke
+document.querySelectorAll(".smoke").forEach(smoke => {
+  const s = smoke.cloneNode(true);
+  s.style.position = "absolute";
+  s.style.left = smoke.style.left;
+  s.style.top = smoke.style.top;
+  s.style.width = smoke.style.width;
+  s.style.height = smoke.style.height;
+  s.style.background = smoke.style.background;
+  s.style.filter = smoke.style.filter;
+  s.style.opacity = smoke.style.opacity;
+  shareArea.appendChild(s);
+});
 
   document.body.appendChild(shareArea);
 
@@ -87,8 +96,8 @@ shareBtn.addEventListener("click", () => {
     const spreadY = -300 - Math.random() * 200;   // higher rise
     const size = isLongDrag ? 50 + Math.random() * 60 : 20 + Math.random() * 40;
 
-      smoke.style.left = window.scrollX + rect.left + rect.width / 2 + spreadX + "px";
-      smoke.style.top = window.scrollY + rect.top + "px";
+      smoke.style.left = rect.left + rect.width / 2 + spreadX + "px";
+      smoke.style.top = rect.top - 20 + "px"; // 🔥 higher smoke
       smoke.style.width = size + "px";
       smoke.style.height = size + "px";
       smoke.style.background = smokeColor;
@@ -121,36 +130,40 @@ shareBtn.addEventListener("click", () => {
     dragStartTime = performance.now();
   }
 
-  function endDrag() {
-    if (!dragging) return;
-    dragging = false;
-    clearInterval(interval);
+function endDrag() {
+  if (!dragging) return;
+  dragging = false;
+  clearInterval(interval);
 
-    puffCount++;
-    puffCounter.textContent = puffCount;
-    localStorage.setItem("puffs", puffCount);
+  puffCount++;
+  puffCounter.textContent = puffCount;
+  localStorage.setItem("puffs", puffCount);
 
-const hold = Math.round(performance.now() - dragStartTime);
-if (hold >= 2000) { // long drag
-  overpuff++;
-  longCounter.textContent = overpuff;
-  localStorage.setItem("longPuffs", overpuff);
-  triggerCRT();
-  if (overpuff % 3 === 0) triggerCough();
-
-  // Spawn bigger smoke for long drag
-  spawnSmoke(true); // <-- call spawnSmoke with "long drag" flag
-}
-
-    playExhale();
-
-    if (puffCount >= 100) unlockSecretFlavor();
+  const hold = Math.round(performance.now() - dragStartTime);
+  if (hold >= 2000) { 
+    overpuff++;
+    longCounter.textContent = overpuff;
+    localStorage.setItem("longPuffs", overpuff);
+    triggerCRT();
+    if (overpuff % 3 === 0) triggerCough();
+    spawnSmoke(true); 
   }
 
-  vape.addEventListener("mousedown", startDrag);
-  vape.addEventListener("touchstart", startDrag, { passive: false });
-  window.addEventListener("mouseup", endDrag);
-  window.addEventListener("touchend", endDrag);
+  // Force unlock audio
+  inhaleSFX.play().catch(() => {});
+  exhaleSFX.play().catch(() => {});
+  playExhale();
+
+  if (puffCount >= 100) unlockSecretFlavor();
+}
+
+["mousedown", "touchstart"].forEach(evt => {
+  vape.addEventListener(evt, startDrag, { passive: false });
+});
+
+["mouseup", "touchend", "touchcancel"].forEach(evt => {
+  window.addEventListener(evt, endDrag);
+});
 
   // ===== CURSOR SMOKE =====
 let lastMove = 0;

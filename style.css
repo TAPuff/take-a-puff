@@ -238,13 +238,13 @@ section {
   padding: 40px 20px;
   opacity: 0;
   transform: translateY(20px);
+  transition: all 0.5s ease-out; /* smooth */
 }
-
 section.show {
   opacity: 1;
   transform: translateY(0);
-  transition: all .5s steps(2);
 }
+
 
 /* ===== SCREEN ZOOM ===== */
 body.zoom {
@@ -278,7 +278,8 @@ body.zoom {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-  pointer-events: auto;
+  pointer-events: auto;  /* make sure touch works */
+  cursor: pointer;
 }
 
 /* ===== VAPE MOUTH (Smoke Origin) ===== */
@@ -286,7 +287,7 @@ body.zoom {
   position: absolute;
   width: 10px;
   height: 10px;
-  top: 20%;      /* roughly at mouth height, adjust until it looks right */
+  top: 10%;      /* roughly at mouth height, adjust until it looks right */
   left: 50%;
   transform: translateX(-50%);
   pointer-events: none;
@@ -299,4 +300,17 @@ body.zoom {
   transform: scale(2);     /* bigger than normal smoke */
   opacity: 0.8 !important;
   filter: blur(6px) !important;
+}
+
+.share-card {
+  background: radial-gradient(circle at top, #ff8ad8, #ff4fd8);
+  border: 6px solid white;
+  padding: 20px;
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 0 30px #ff69eb;
+}
+
+body {
+  touch-action: manipulation;
 }
