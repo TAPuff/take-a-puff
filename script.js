@@ -1,22 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
   const vape = document.getElementById("vape");
   const flavorButtons = document.querySelectorAll("#flavors button");
-  const smokeLayer = document.getElementById("smoke-layer");
+  const shareBtn = document.getElementById("share-btn");
 
+  // ===== PUFF COUNTERS & SECRET =====
   let puffCount = Number(localStorage.getItem("puffs")) || 0;
   let longDragCount = Number(localStorage.getItem("longDrags")) || 0;
   let secretUnlocked = localStorage.getItem("secret") === "true";
   let smokeColor = "#FF4FD8";
+  let dragging = false;
+  let dragStart = null;
+  let interval = null;
+  let overpuff = 0;
 
   document.getElementById("puff-count").textContent = puffCount;
   document.getElementById("long-drag-count").textContent = longDragCount;
 
-  // MAIN CURSOR
+  // ===== MAIN CURSOR =====
   const mainCursor = document.createElement("div");
   mainCursor.className = "pixel-cursor main";
   document.body.appendChild(mainCursor);
 
-  // FLAVOR BUTTONS
+  // ===== FLAVOR BUTTONS =====
   flavorButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       flavorButtons.forEach(b => b.classList.remove("active"));
@@ -25,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // SPAWN SMOKE (append to #smoke-layer)
+  // ===== SPAWN SMOKE =====
   function spawnSmoke(hold = 500, burst = false) {
     const vapeRect = vape.getBoundingClientRect();
     const vapeX = vapeRect.left + vapeRect.width / 2;
@@ -37,24 +42,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (let i = 0; i < count; i++) {
       const smoke = document.createElement("div");
-      smoke.className = "smoke";
+      smoke.className = "pixel-cursor";
       smoke.style.left = vapeX + "px";
       smoke.style.top = vapeY + "px";
+      const size = 12 + Math.random() * 12;
+      smoke.style.width = size + "px";
+      smoke.style.height = size + "px";
       smoke.style.background = smokeColor;
-      smoke.style.setProperty("--drift", `${(Math.random() - 0.5) * 100}px`);
-      smokeLayer.appendChild(smoke);
+      smoke.style.opacity = 0.5 + Math.random() * 0.3;
+      smoke.style.filter = `blur(${1 + Math.random() * 2}px)`;
+      smoke.style.position = "fixed";
+      smoke.style.zIndex = 9999;
+      document.body.appendChild(smoke);
 
-      // remove after animation
-      setTimeout(() => smoke.remove(), 5000);
+      const driftX = (Math.random() - 0.5) * 80;
+      const driftY = -50 - Math.random() * 100;
+      const duration = 2000 + Math.random() * 2000;
+
+      smoke.animate([
+        { transform: "translate(-50%, -50%) translate(0px,0px) scale(0.8)", opacity: parseFloat(smoke.style.opacity) },
+        { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
+      ], { duration, easing: "ease-out", fill: "forwards" });
+
+      setTimeout(() => smoke.remove(), duration + 50);
     }
   }
 
-  // DRAG
-  let dragging = false;
-  let dragStart = null;
-  let interval = null;
-  let overpuff = 0;
-
+  // ===== DRAG INTERACTIONS =====
   function startDrag(e) {
     e.preventDefault();
     dragging = true;
@@ -108,9 +122,10 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => body.classList.remove("zoom"), 150);
   }
 
-  // CURSOR TRAIL
+  // ===== CURSOR TRAIL =====
   const trailElements = [];
   const maxTrail = 25;
+
   document.addEventListener("mousemove", e => {
     mainCursor.style.left = e.clientX + "px";
     mainCursor.style.top = e.clientY + "px";
@@ -127,9 +142,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const driftY = -20 - Math.random() * 40;
 
     trail.animate([
-      { transform: `translate(-50%, -50%) translate(0,0) scale(0.8)`, opacity: 0.6 },
+      { transform: "translate(-50%, -50%) translate(0,0) scale(0.8)", opacity: 0.6 },
       { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
-    ], { duration: 2000 + Math.random() * 2000, easing: "ease-out", fill: "forwards" });
+    ], {
+      duration: 2000 + Math.random() * 2000,
+      easing: "ease-out",
+      fill: "forwards"
+    });
 
     if (trailElements.length > maxTrail) {
       const old = trailElements.shift();
@@ -139,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => { if (trail.parentNode) trail.remove(); }, 4000);
   });
 
-  // SECRET FLAVOR
+  // ===== SECRET FLAVOR =====
   function unlockSecretFlavor() {
     secretUnlocked = true;
     localStorage.setItem("secret", "true");
@@ -169,16 +188,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // COUGH
+  // ===== COUGH EASTER EGG =====
   function triggerCough() {
     overpuff = 0;
     document.body.style.filter = "contrast(1.4)";
     setTimeout(() => document.body.style.filter = "", 300);
   }
 
+  // ===== INITIAL SECRET CHECK =====
   if (secretUnlocked) unlockSecretFlavor();
 
-  // SECTIONS
+  // ===== SECTION OBSERVER =====
   const sections = document.querySelectorAll("section");
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -186,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
         entry.target.classList.add("show");
       }
     });
-  }, { threshold: 0.2 });
+  },{threshold: 0.2});
+
   sections.forEach(sec => observer.observe(sec));
 });
