@@ -270,16 +270,24 @@ class PixelCursor {
     this.el = document.querySelector('.pixel-cursor');
     this.trailContainer = document.querySelector('.cursor-trail');
     this.isVisible = false;
+    this.isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
     this.init();
   }
 
   init() {
     if (!this.el) return;
+    // Hide cursor element on touch devices, but keep trail via touch events
+    if (this.isTouch) {
+      this.hide();
+      document.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        this.spawnTrail(t.clientX, t.clientY, true);
+      }, { passive: true });
+      return;
+    }
     document.addEventListener('mousemove', (e) => this.move(e));
     document.addEventListener('mouseleave', () => this.hide());
     document.addEventListener('mouseenter', () => this.show());
-    
-    // Default cursor is hidden via CSS on body, but we ensure it here
     document.body.style.cursor = 'none';
   }
 
@@ -288,22 +296,29 @@ class PixelCursor {
     this.el.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
     
     // Trail logic
-    if (Math.random() > 0.8) {
-      this.spawnTrail(e.clientX, e.clientY);
+    for (let i = 0; i < 2; i++) {
+      if (Math.random() > 0.6) {
+        this.spawnTrail(e.clientX + (Math.random()*6-3), e.clientY + (Math.random()*6-3));
+      }
     }
   }
 
-  spawnTrail(x, y) {
+  spawnTrail(x, y, heavy = false) {
     const p = document.createElement('div');
     p.className = 'trail-particle';
     p.style.left = x + 'px';
     p.style.top = y + 'px';
+    if (heavy) {
+      p.style.width = '22px';
+      p.style.height = '22px';
+      p.style.background = 'rgba(255,255,255,0.85)';
+    }
     document.body.appendChild(p);
     
     p.animate([
-      { transform: 'scale(1)', opacity: 0.5 },
-      { transform: 'scale(0) translate(0, -20px)', opacity: 0 }
-    ], { duration: 1000 }).onfinish = () => p.remove();
+      { transform: 'scale(1)', opacity: 0.7 },
+      { transform: 'scale(0) translate(0, -40px)', opacity: 0 }
+    ], { duration: heavy ? 1200 : 900 }).onfinish = () => p.remove();
   }
 
   show() {
@@ -439,6 +454,15 @@ class VapeApp {
     window.addEventListener('touchmove', e => {
       if (this.floodLevel > 50) {
         const diff = Math.abs(e.touches[0].clientX - touchStartX);
+        if (diff > 50) this.clearFlood();
+      }
+    });
+    // Desktop swipe (mouse drag) to clear flood
+    let mouseStartX = 0;
+    window.addEventListener('mousedown', e => mouseStartX = e.clientX);
+    window.addEventListener('mousemove', e => {
+      if (this.floodLevel > 50 && e.buttons === 1) {
+        const diff = Math.abs(e.clientX - mouseStartX);
         if (diff > 50) this.clearFlood();
       }
     });
@@ -646,12 +670,12 @@ class VapeApp {
 
   checkUnlocks() {
     const milestones = {
-      100: { name: 'GOLDEN HAZE', color: '#FFD700' },
-      200: { name: 'VOID MIST', color: '#000000' },
-      300: { name: 'PLASMA CLOUD', color: '#FF0000' },
-      400: { name: 'ALIEN BREATH', color: '#39FF14' },
-      500: { name: 'COSMIC FOG', color: '#9945FF' },
-      1000: { name: 'GOD MODE', color: '#FFFFFF' }
+      100: { name: '⭐ GOLDEN HAZE', color: '#FFD700' },
+      200: { name: '🕳️ VOID MIST', color: '#000000' },
+      300: { name: '⚡ PLASMA CLOUD', color: '#FF0000' },
+      400: { name: '👽 ALIEN BREATH', color: '#39FF14' },
+      500: { name: '🌌 COSMIC FOG', color: '#9945FF' },
+      1000: { name: '🧪 GOD MODE', color: '#FFFFFF' }
     };
 
     Object.keys(milestones).forEach(count => {
@@ -725,9 +749,33 @@ class VapeApp {
       this.floodText.style.display = 'none';
     }
 
+    // Ambient background smoke occasionally
+    if (!this.isDragging && Math.random() < 0.02) {
+      const x = Math.random() * window.innerWidth;
+      const y = window.innerHeight - 50 - Math.random() * 100;
+      this.spawnAmbientSmoke(x, y);
+    }
+
     requestAnimationFrame(() => this.gameLoop());
   }
 
+  spawnAmbientSmoke(x, y) {
+    const smoke = document.createElement('div');
+    smoke.className = 'smoke';
+    const size = 20 + Math.random() * 30;
+    const color = 'rgba(255,255,255,0.3)';
+    smoke.style.width = `${size}px`;
+    smoke.style.height = `${size}px`;
+    smoke.style.left = `${x}px`;
+    smoke.style.top = `${y}px`;
+    smoke.style.background = color;
+    document.body.appendChild(smoke);
+    const destY = y - (100 + Math.random() * 150);
+    smoke.animate([
+      { transform: 'scale(0.6)', opacity: 0.4 },
+      { transform: `translate(0, ${destY - y}px) scale(2)`, opacity: 0 }
+    ], { duration: 2500, easing: 'ease-out' }).onfinish = () => smoke.remove();
+  }
   bindFlavors() {
     const buttons = document.querySelectorAll('#flavors button');
     buttons.forEach(btn => {
@@ -737,6 +785,20 @@ class VapeApp {
         this.smokeColor = btn.getAttribute('data-color');
       });
     });
+    const toggle = document.getElementById('flavor-toggle');
+    const list = document.getElementById('flavors');
+    if (toggle && list) {
+      toggle.addEventListener('click', () => {
+        const isHidden = list.hasAttribute('hidden');
+        if (isHidden) {
+          list.removeAttribute('hidden');
+          toggle.textContent = 'SELECT FLAVOR ▴';
+        } else {
+          list.setAttribute('hidden', '');
+          toggle.textContent = 'SELECT FLAVOR ▾';
+        }
+      });
+    }
   }
 
   shareScore() {
@@ -767,4 +829,17 @@ class VapeApp {
 // Start App
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new VapeApp();
+  // Smooth scroll for top nav with section highlight
+  document.querySelectorAll('.top-nav .nav-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const id = link.getAttribute('href');
+      const target = document.querySelector(id);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        target.classList.add('section-highlight');
+        setTimeout(() => target.classList.remove('section-highlight'), 1000);
+      }
+    });
+  });
 });

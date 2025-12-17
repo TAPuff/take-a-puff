@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>TAKE A PUFF ($PUFF)</title>
+  <link rel="icon" type="image/png" href="images/vape.png" />
   
   <!-- EXTERNAL LIBS -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -46,23 +47,31 @@
   <header>
     <h1>TAKE A PUFF</h1>
     <span class="ticker">$PUFF</span>
+    <div class="tagline">RELAX, TAKE A SMOKE BREAK</div>
   </header>
+  
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <a href="#section-socials" class="nav-link">SOCIALS</a>
+    <a href="#section-share" class="nav-link">SHARE SCORE</a>
+    <a href="#section-ca" class="nav-link">REVEAL CA</a>
+  </nav>
 
   <!-- MAIN APP -->
   <main>
     <div id="vape-zone">
       
-      <!-- METERS -->
-      <div id="nicotine-meter-container">
-        <div class="meter-label">NIC RUSH</div>
-        <div class="meter-bar"><div id="nicotine-level"></div></div>
-      </div>
-
       <!-- VAPE IMAGE -->
       <div class="vape-container">
         <img id="vape" src="images/vape.png" alt="Vape Device">
         <div id="smoke-origin"></div>
         <div id="perfect-ring"></div>
+      </div>
+      
+      <!-- METERS (moved below vape) -->
+      <div id="nicotine-meter-container">
+        <div class="meter-label">NIC RUSH</div>
+        <div class="meter-bar"><div id="nicotine-level"></div></div>
       </div>
       
       <p class="hint">CLICK & HOLD TO PUFF</p>
@@ -73,28 +82,18 @@
         <div class="stat">LONG DRAGS: <span id="long-drag-count">0</span></div>
       </div>
 
-      <!-- FLAVOR SELECTOR -->
-      <div id="flavors">
-        <!-- Default Flavors -->
-        <button data-color="#7DF9FF" data-sound="click">❄ BLUE FREEZE</button>
-        <button data-color="#FF4FD8" class="active" data-sound="click">🍓 PINK RUSH</button>
-        <button data-color="#C084FC" data-sound="click">🍇 GRAPE HAZE</button>
-        <button data-color="#6EE7B7" data-sound="click">🌿 MINT CLOUD</button>
-        <button data-color="#FFB199" data-sound="click">🍑 PEACH POP</button>
-        <!-- Secret flavors will be injected here via JS -->
-      </div>
-
-      <!-- ACTIONS -->
-      <div class="action-row">
-        <button id="share-btn" data-sound="camera">📸 SHARE SCORE</button>
-        <button id="ca-btn" data-sound="click">REVEAL CA</button>
-      </div>
-      
-      <!-- SOCIALS -->
-      <div class="social-row">
-        <a href="#" target="_blank" class="social-btn" data-platform="discord">DISCORD</a>
-        <a href="#" target="_blank" class="social-btn" data-platform="x">X (TWITTER)</a>
-        <a href="#" target="_blank" class="social-btn" data-platform="telegram">TELEGRAM</a>
+      <!-- FLAVOR DROPDOWN -->
+      <div class="flavor-dropdown">
+        <button id="flavor-toggle" data-sound="click">SELECT FLAVOR ▾</button>
+        <div id="flavors" hidden>
+          <!-- Default Flavors -->
+          <button data-color="#7DF9FF" data-sound="click">❄ BLUE FREEZE</button>
+          <button data-color="#FF4FD8" class="active" data-sound="click">🍓 PINK RUSH</button>
+          <button data-color="#C084FC" data-sound="click">🍇 GRAPE HAZE</button>
+          <button data-color="#6EE7B7" data-sound="click">🌿 MINT CLOUD</button>
+          <button data-color="#FFB199" data-sound="click">🍑 PEACH POP</button>
+          <!-- Secret flavors will be injected here via JS -->
+        </div>
       </div>
 
     </div>
@@ -126,10 +125,48 @@
     </section>
   </div>
 
+  <!-- SECTION: SOCIALS -->
+  <section id="section-socials" class="section">
+    <h2>SOCIALS</h2>
+    <div class="social-row">
+      <a href="#" target="_blank" class="social-btn" data-platform="discord">DISCORD</a>
+      <a href="#" target="_blank" class="social-btn" data-platform="x">X (TWITTER)</a>
+      <a href="#" target="_blank" class="social-btn" data-platform="telegram">TELEGRAM</a>
+    </div>
+  </section>
+
+  <!-- SECTION: SHARE -->
+  <section id="section-share" class="section">
+    <h2>SHARE SCORE</h2>
+    <div class="action-row">
+      <button id="share-btn" data-sound="camera">📸 SHARE SCORE</button>
+    </div>
+  </section>
+
+  <!-- SECTION: REVEAL CA -->
+  <section id="section-ca" class="section">
+    <h2>REVEAL CA</h2>
+    <div class="action-row">
+      <button id="ca-btn" data-sound="click">REVEAL CA</button>
+    </div>
+  </section>
+
   <!-- POWERED BY SOLANA -->
   <footer class="solana-footer">
     <span>POWERED BY</span>
-    <img src="images/solana-sol-logo.png" alt="Solana Logo" class="solana-logo">
+    <svg class="solana-logo" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 256 256">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#14F195"/>
+          <stop offset="100%" stop-color="#9945FF"/>
+        </linearGradient>
+      </defs>
+      <g fill="url(#g1)">
+        <path d="M37 182h160l22 22H59z"/>
+        <path d="M37 118h160l22 22H59z"/>
+        <path d="M37 54h160l22 22H59z"/>
+      </g>
+    </svg>
     <span>SOLANA</span>
   </footer>
 
