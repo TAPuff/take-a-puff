@@ -117,6 +117,34 @@ class VapeAudio {
       gain.gain.linearRampToValueAtTime(0, t + 1);
       osc.start(t);
       osc.stop(t + 1);
+    } else if (type === 'unlock') {
+      const freqs = [600, 900, 1200];
+      freqs.forEach((f, i) => {
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(f, t + i * 0.05);
+        g.gain.setValueAtTime(0.15, t + i * 0.05);
+        g.gain.linearRampToValueAtTime(0, t + i * 0.2);
+        o.connect(g);
+        g.connect(this.ctx.destination);
+        o.start(t + i * 0.05);
+        o.stop(t + i * 0.2);
+      });
+    } else if (type === 'legendary') {
+      const chord = [783.99, 987.77, 1318.51]; // G5, B5, E6
+      chord.forEach((f, i) => {
+        const o = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        o.type = 'triangle';
+        o.frequency.setValueAtTime(f, t);
+        g.gain.setValueAtTime(0.12, t);
+        g.gain.linearRampToValueAtTime(0, t + 1.2 + i * 0.1);
+        o.connect(g);
+        g.connect(this.ctx.destination);
+        o.start(t);
+        o.stop(t + 1.3 + i * 0.1);
+      });
     }
   }
 
@@ -345,6 +373,8 @@ class VapeApp {
     this.ring = document.getElementById('perfect-ring');
     this.flood = document.getElementById('smoke-flood');
     this.floodText = document.querySelector('.flood-warning');
+    this.tickerEl = document.querySelector('.ticker');
+    this.vaporToggle = document.getElementById('vapor-toggle');
     
     // Game State
     this.smokeColor = '#FF4FD8';
@@ -356,6 +386,7 @@ class VapeApp {
     this.spamCount = 0;
     this.isBurnt = false;
     this.floodLevel = 0;
+    this.vaporTrailsEnabled = localStorage.getItem('vaporTrails') === 'on';
 
     // Stats
     this.puffCount = parseInt(localStorage.getItem('puffs') || '0');
@@ -363,6 +394,10 @@ class VapeApp {
 
     // Secret Flavors
     this.unlockedFlavors = new Set(JSON.parse(localStorage.getItem('unlocked') || '[]'));
+    
+    // CA Reveal
+    this.caAnimInterval = null;
+    this.caSettleInterval = null;
 
     this.init();
   }
@@ -413,14 +448,19 @@ class VapeApp {
       caBtn.addEventListener('click', () => {
         caModal.setAttribute('aria-hidden', 'false');
         this.audio.playSound('click');
+        this.startCAReveal();
       });
       closeCaBtn.addEventListener('click', () => {
         caModal.setAttribute('aria-hidden', 'true');
         this.audio.playSound('click');
+        this.stopCAReveal();
+        if (caTextEl && caTextEl.dataset.value) caTextEl.textContent = caTextEl.dataset.value;
       });
       caModal.addEventListener('click', (e) => {
         if (e.target === caModal) {
           caModal.setAttribute('aria-hidden', 'true');
+          this.stopCAReveal();
+          if (caTextEl && caTextEl.dataset.value) caTextEl.textContent = caTextEl.dataset.value;
         }
       });
       copyCaBtn.addEventListener('click', async () => {
@@ -435,6 +475,26 @@ class VapeApp {
       });
     }
 
+    // Vapor Trails Toggle
+    if (this.vaporToggle) {
+      this.vaporToggle.addEventListener('click', () => {
+        this.vaporTrailsEnabled = !this.vaporTrailsEnabled;
+        this.vaporToggle.textContent = this.vaporTrailsEnabled ? 'VAPOR TRAILS: ON' : 'VAPOR TRAILS: OFF';
+        localStorage.setItem('vaporTrails', this.vaporTrailsEnabled ? 'on' : 'off');
+        this.audio.playSound('click');
+      });
+      // Parallax scroll
+      window.addEventListener('scroll', () => {
+        if (!this.vaporTrailsEnabled) return;
+        const y = window.scrollY;
+        const crt = document.getElementById('crt');
+        const noise = document.getElementById('noise');
+        if (crt) crt.style.transform = `translateY(${y * -0.02}px)`;
+        if (noise) noise.style.transform = `translateY(${y * -0.04}px)`;
+      }, { passive: true });
+      this.vaporToggle.textContent = this.vaporTrailsEnabled ? 'VAPOR TRAILS: ON' : 'VAPOR TRAILS: OFF';
+    }
+    
     // Show native cursor over interactive elements
     const interactiveSelector = 'button, .social-btn, a, .pump-link';
     document.querySelectorAll(interactiveSelector).forEach(el => {
@@ -481,6 +541,45 @@ class VapeApp {
     document.getElementById('ca-btn').addEventListener('click', () => {
       alert("CA: COMING_SOON_ON_SOLANA_CHAIN_XYZ");
     });
+  }
+  
+  startCAReveal() {
+    const el = document.getElementById('contract-address');
+    if (!el) return;
+    const target = el.textContent.trim();
+    el.dataset.value = target;
+    const hex = '0123456789ABCDEF';
+    let progress = 0;
+    clearInterval(this.caAnimInterval);
+    clearInterval(this.caSettleInterval);
+    this.caAnimInterval = setInterval(() => {
+      let out = '';
+      for (let i = 0; i < target.length; i++) {
+        const ch = target[i];
+        if (i < progress || ch === ' ') {
+          out += ch;
+        } else {
+          out += hex[Math.floor(Math.random() * hex.length)];
+        }
+      }
+      el.textContent = out;
+    }, 35);
+    setTimeout(() => {
+      this.caSettleInterval = setInterval(() => {
+        progress++;
+        if (progress >= target.length) {
+          el.textContent = target;
+          this.stopCAReveal();
+        }
+      }, 45);
+    }, 500);
+  }
+  
+  stopCAReveal() {
+    clearInterval(this.caAnimInterval);
+    clearInterval(this.caSettleInterval);
+    this.caAnimInterval = null;
+    this.caSettleInterval = null;
   }
 
   startDrag(e) {
@@ -548,8 +647,13 @@ class VapeApp {
       this.audio.playSound('golden');
       this.spawnCloud(true, '#FFD700'); // Gold
     } else {
-      this.audio.playExhale();
-      this.spawnCloud(duration > 2000, this.smokeColor);
+      if (Math.random() < 0.01) {
+        this.audio.playSound('legendary');
+        this.spawnCloud(true, '#FFD700');
+      } else {
+        this.audio.playExhale();
+        this.spawnCloud(duration > 2000, this.smokeColor);
+      }
     }
 
     // Stats
@@ -639,6 +743,8 @@ class VapeApp {
     const crt = document.getElementById('crt');
     crt.style.opacity = '1';
     setTimeout(() => crt.style.opacity = '0.6', 300);
+    crt.classList.add('crt-warp');
+    setTimeout(() => crt.classList.remove('crt-warp'), 600);
   }
 
   triggerOverpuff() {
@@ -650,6 +756,9 @@ class VapeApp {
       warn.style.display = 'none';
       document.body.classList.remove('shake-screen');
     }, 1000);
+    const crt = document.getElementById('crt');
+    crt.classList.add('crt-warp');
+    setTimeout(() => crt.classList.remove('crt-warp'), 600);
   }
 
   triggerBurntCoil() {
@@ -679,7 +788,8 @@ class VapeApp {
     Object.keys(milestones).forEach(count => {
       if (this.puffCount >= count && !this.unlockedFlavors.has(count)) {
         this.unlockedFlavors.add(count);
-        alert(`UNLOCKED: ${milestones[count].name}`);
+        this.audio.playSound('unlock');
+        this.spawnFireworks(milestones[count].color);
         this.addFlavorBtn(milestones[count].name, milestones[count].color);
       }
     });
@@ -696,6 +806,35 @@ class VapeApp {
     localStorage.setItem('unlocked', JSON.stringify([...this.unlockedFlavors]));
   }
 
+  spawnFireworks(color) {
+    const bursts = 24;
+    for (let i = 0; i < bursts; i++) {
+      setTimeout(() => {
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const smoke = document.createElement('div');
+        smoke.className = 'smoke';
+        const size = 40 + Math.random() * 60;
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 220 + Math.random() * 180;
+        const x = centerX + Math.cos(angle) * 10;
+        const y = centerY + Math.sin(angle) * 10;
+        const destX = centerX + Math.cos(angle) * dist;
+        const destY = centerY + Math.sin(angle) * dist;
+        smoke.style.width = `${size}px`;
+        smoke.style.height = `${size}px`;
+        smoke.style.left = `${x}px`;
+        smoke.style.top = `${y}px`;
+        smoke.style.background = color;
+        document.body.appendChild(smoke);
+        smoke.animate([
+          { transform: 'scale(0.7)', opacity: 0.9 },
+          { transform: `translate(${destX - x}px, ${destY - y}px) scale(2.6)`, opacity: 0 }
+        ], { duration: 3000, easing: 'ease-out' }).onfinish = () => smoke.remove();
+      }, i * 30);
+    }
+  }
+  
   addFlavorBtn(name, color) {
     const container = document.getElementById('flavors');
     // Check exist
@@ -736,6 +875,16 @@ class VapeApp {
       document.body.classList.remove('zoom-pulse');
       this.audio.setIntensity(0); // Silent
     }
+    
+    // Reactive Ticker: glow and speed
+    if (this.tickerEl) {
+      const level = this.nicotine; // 0-100
+      const glowStrength = Math.min(12, 2 + level / 8); // 2→12
+      this.tickerEl.style.filter = `drop-shadow(0 0 ${glowStrength}px var(--blue))`;
+      const glowDur = Math.max(1, 2.5 - level / 80); // faster with higher level
+      const wobbleDur = Math.max(1.2, 3.5 - level / 60);
+      this.tickerEl.style.animationDuration = `${glowDur}s, ${wobbleDur}s`;
+    }
 
     // Flood Logic
     this.flood.style.opacity = this.floodLevel / 100;
@@ -748,34 +897,35 @@ class VapeApp {
     }
 
     // Ambient background smoke more prominent
-    if (!this.isDragging && Math.random() < 0.06) {
+    const ambientProb = this.vaporTrailsEnabled ? 0.12 : 0.06;
+    if (!this.isDragging && Math.random() < ambientProb) {
       const count = 1 + Math.floor(Math.random() * 3);
       for (let i = 0; i < count; i++) {
         const x = Math.random() * window.innerWidth;
         const y = window.innerHeight - 30 - Math.random() * 140;
-        this.spawnAmbientSmoke(x, y);
+        this.spawnAmbientSmoke(x, y, this.vaporTrailsEnabled);
       }
     }
 
     requestAnimationFrame(() => this.gameLoop());
   }
 
-  spawnAmbientSmoke(x, y) {
+  spawnAmbientSmoke(x, y, heavy = false) {
     const smoke = document.createElement('div');
     smoke.className = 'smoke';
-    const size = 30 + Math.random() * 40;
-    const color = 'rgba(255,255,255,0.6)';
+    const size = (heavy ? 40 : 30) + Math.random() * (heavy ? 60 : 40);
+    const color = heavy ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.6)';
     smoke.style.width = `${size}px`;
     smoke.style.height = `${size}px`;
     smoke.style.left = `${x}px`;
     smoke.style.top = `${y}px`;
     smoke.style.background = color;
     document.body.appendChild(smoke);
-    const destY = y - (160 + Math.random() * 220);
+    const destY = y - (heavy ? 220 + Math.random() * 260 : 160 + Math.random() * 220);
     smoke.animate([
       { transform: 'scale(0.8)', opacity: 0.7 },
       { transform: `translate(0, ${destY - y}px) scale(2.8)`, opacity: 0 }
-    ], { duration: 3500, easing: 'ease-out' }).onfinish = () => smoke.remove();
+    ], { duration: heavy ? 4200 : 3500, easing: 'ease-out' }).onfinish = () => smoke.remove();
   }
   bindFlavors() {
     const buttons = document.querySelectorAll('#flavors button');

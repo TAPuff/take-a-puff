@@ -224,19 +224,21 @@ h1 {
 }
 .top-nav #pump-btn {
   font-family: 'Press Start 2P', monospace;
-  font-size: 11px;
+  font-size: 13px;
   color: #000;
   text-decoration: none;
-  padding: 10px 14px;
-  background: linear-gradient(180deg, #ff85c2, #ff4fd8);
+  padding: 14px 20px;
+  background: linear-gradient(90deg, #ff4fd8, #ff85c2, #ff69eb, #ff4fd8);
+  background-size: 300% 100%;
   border: 2px solid #000;
   border-radius: 8px;
-  box-shadow: 0 0 12px rgba(255,79,216,0.8), 4px 4px 0 rgba(0,0,0,0.2);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 20px rgba(255,79,216,0.9), 6px 6px 0 rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s, filter 0.2s;
+  animation: rainbowShimmer 2.2s ease-in-out infinite, trailPulse 2s ease-in-out infinite;
 }
-.top-nav #pump-btn:hover { transform: translateY(-2px); box-shadow: 0 0 16px rgba(255,105,235,1), 6px 6px 0 rgba(0,0,0,0.2); }
+.top-nav #pump-btn:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(255,105,235,1), 8px 8px 0 rgba(0,0,0,0.25); filter: drop-shadow(0 0 10px rgba(255,105,235,0.9)); }
 .nav-links { display: flex; gap: 10px; }
-.nav-icons { margin-left: auto; display: flex; gap: 10px; }
+.nav-icons { display: flex; gap: 10px; }
 .nav-icon { display: inline-block; padding: 6px; border: 2px solid #000; background: #fff; border-radius: 8px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); }
 .top-nav .nav-link {
   font-family: 'Press Start 2P', monospace;
@@ -300,6 +302,11 @@ h1 {
 
 #vape:active {
   transform: scale(0.98) rotate(1deg);
+}
+#vape:hover { animation: vapeHover 1.5s ease-in-out infinite; }
+@keyframes vapeHover {
+  0%,100% { transform: translateY(0) rotate(0deg) scale(1); }
+  50% { transform: translateY(-4px) rotate(1deg) scale(1.02); }
 }
 
 #smoke-origin {
@@ -367,6 +374,16 @@ h1 {
   background: rgba(0,0,0,0.4);
   padding: 10px;
 }
+#flavors[hidden] { display: none !important; }
+#flavors:not([hidden]) {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto 30px;
+  padding: 0 10px;
+}
 
 button, .social-btn {
   font-family: 'Press Start 2P', monospace;
@@ -421,7 +438,11 @@ button.active {
   height: 36px;
   display: block;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  animation: socialSparkle 4s ease-in-out infinite;
 }
+.nav-icon[data-platform="discord"] .social-icon { animation: socialSparkleDiscord 4s ease-in-out infinite; }
+.nav-icon[data-platform="x"] .social-icon { animation: socialSparkleX 4s ease-in-out infinite; }
+.nav-icon[data-platform="telegram"] .social-icon { animation: socialSparkleTelegram 4s ease-in-out infinite; }
 
 /* ================= INFO SECTIONS ================= */
 .content-wrapper {
@@ -511,14 +532,17 @@ button.active {
 
 .ca-big {
   font-family: 'Press Start 2P', monospace;
-  font-size: 12px;
-  padding: 16px 20px;
-  background: linear-gradient(180deg, #ffd1e8, #ff69eb);
+  font-size: 14px;
+  padding: 18px 24px;
+  background: linear-gradient(90deg, #ff4fd8, #ff85c2, #ff69eb, #ff4fd8);
+  background-size: 300% 100%;
   color: #000;
   border: 3px solid #000;
   border-radius: 10px;
-  box-shadow: 0 0 14px rgba(255,105,235,0.9), 6px 6px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 0 20px rgba(255,105,235,0.9), 6px 6px 0 rgba(0,0,0,0.2);
+  animation: rainbowShimmer 2.2s ease-in-out infinite, trailPulse 2s ease-in-out infinite;
 }
+.ca-big:hover { transform: translateY(-2px); box-shadow: 0 0 28px rgba(255,105,235,1), 8px 8px 0 rgba(0,0,0,0.25); filter: drop-shadow(0 0 10px rgba(255,105,235,0.9)); }
 
 /* Smoke Text */
 .smoke-text {
@@ -543,6 +567,15 @@ button.active {
 }
 
 /* ================= ANIMATIONS ================= */
+@keyframes rainbowShimmer {
+  0% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+  50% { background-position: 100% 50%; filter: hue-rotate(20deg); }
+  100% { background-position: 0% 50%; filter: hue-rotate(0deg); }
+}
+@keyframes trailPulse {
+  0%,100% { box-shadow: 0 0 20px rgba(255,79,216,0.9), 6px 6px 0 rgba(0,0,0,0.2); }
+  50% { box-shadow: 0 0 28px rgba(255,105,235,1), 8px 8px 0 rgba(0,0,0,0.25); }
+}
 @keyframes shake {
   0% { transform: translate(1px, 1px) rotate(0deg); }
   10% { transform: translate(-1px, -2px) rotate(-1deg); }
@@ -568,6 +601,31 @@ button.active {
 @keyframes pulse {
   from { transform: scale(1); }
   to { transform: scale(1.02); }
+}
+@keyframes socialSparkle {
+  0%, 100% { filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)) brightness(1); transform: scale(1); }
+  50% { filter: drop-shadow(0 3px 6px rgba(0,0,0,0.5)) brightness(1.15); transform: scale(1.03); }
+}
+@keyframes socialSparkleDiscord {
+  0%, 100% { filter: drop-shadow(0 2px 6px rgba(88,101,242,0.6)) brightness(1); transform: scale(1); }
+  50% { filter: drop-shadow(0 4px 10px rgba(88,101,242,0.9)) brightness(1.2); transform: scale(1.05); }
+}
+@keyframes socialSparkleX {
+  0%, 100% { filter: drop-shadow(0 2px 6px rgba(255,255,255,0.5)) brightness(1); transform: scale(1); }
+  50% { filter: drop-shadow(0 4px 10px rgba(255,255,255,0.9)) brightness(1.25); transform: scale(1.05); }
+}
+@keyframes socialSparkleTelegram {
+  0%, 100% { filter: drop-shadow(0 2px 6px rgba(34,158,217,0.6)) brightness(1); transform: scale(1); }
+  50% { filter: drop-shadow(0 4px 10px rgba(34,158,217,0.95)) brightness(1.2); transform: scale(1.05); }
+}
+
+#crt.crt-warp {
+  animation: crtRipple 0.6s ease-out;
+}
+@keyframes crtRipple {
+  0% { transform: scale(1); filter: contrast(1.1) brightness(1); }
+  50% { transform: scale(1.02); filter: contrast(1.4) brightness(1.05); }
+  100% { transform: scale(1); filter: contrast(1.1) brightness(1); }
 }
 
 /* ================= MODAL ================= */
