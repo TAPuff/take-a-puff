@@ -25,6 +25,17 @@ body {
   pointer-events: none;
 }
 
+.pixel-cursor {
+  width: 12px;
+  height: 12px;
+  background: white;
+  position: fixed;
+  z-index: 10000;
+  box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+  transform: translate(-50%, -50%);
+  display: none; /* hidden by default until moved */
+}
+
 #crt {
   position: fixed;
   inset: 0;

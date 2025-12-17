@@ -12,8 +12,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const exhaleSFX = new Audio("sounds/exhale.mp3");
   inhaleSFX.preload = "auto";
   exhaleSFX.preload = "auto";
-  inhaleSFX.load();
-  exhaleSFX.load();
+  
+  function playInhale() {
+    inhaleSFX.currentTime = 0;
+    inhaleSFX.play().catch(() => {});
+  }
+
+  function playExhale() {
+    exhaleSFX.currentTime = 0;
+    exhaleSFX.play().catch(() => {});
+  }
 
   function unlockAudio() {
     inhaleSFX.play().then(() => inhaleSFX.pause()).catch(() => {});
@@ -29,6 +37,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const longCounter = document.getElementById("long-drag-count");
   puffCounter.textContent = puffCount;
   longCounter.textContent = overpuff;
+
+  if (puffCount >= 100 || localStorage.getItem("secret") === "true") {
+    unlockSecretFlavor();
+  }
 
   const shareBtn = document.getElementById("share-btn");
 
@@ -117,14 +129,13 @@ document.querySelectorAll(".smoke").forEach(smoke => {
 
     setTimeout(() => smoke.remove(), 7000);
   }
-
-  playInhale();
 }
 
   // ===== DRAG PUFF =====
   function startDrag(e) {
     e.preventDefault();
     dragging = true;
+    playInhale();
     spawnSmoke();
     interval = setInterval(() => spawnSmoke(false), 150);
     dragStartTime = performance.now();
@@ -167,7 +178,15 @@ function endDrag() {
 
   // ===== CURSOR SMOKE =====
 let lastMove = 0;
+const pixelCursor = document.querySelector(".pixel-cursor");
+
 document.addEventListener("mousemove", e => {
+  if (pixelCursor) {
+    pixelCursor.style.left = e.clientX + "px";
+    pixelCursor.style.top = e.clientY + "px";
+    pixelCursor.style.display = "block";
+  }
+
   if (performance.now() - lastMove < 30) return;
   lastMove = performance.now();
 
