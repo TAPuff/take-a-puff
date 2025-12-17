@@ -374,7 +374,6 @@ class VapeApp {
     this.flood = document.getElementById('smoke-flood');
     this.floodText = document.querySelector('.flood-warning');
     this.tickerEl = document.querySelector('.ticker');
-    this.vaporToggle = document.getElementById('vapor-toggle');
     
     // Game State
     this.smokeColor = '#FF4FD8';
@@ -386,7 +385,7 @@ class VapeApp {
     this.spamCount = 0;
     this.isBurnt = false;
     this.floodLevel = 0;
-    this.vaporTrailsEnabled = localStorage.getItem('vaporTrails') === 'on';
+    this.vaporTrailsEnabled = true;
 
     // Stats
     this.puffCount = parseInt(localStorage.getItem('puffs') || '0');
@@ -476,24 +475,14 @@ class VapeApp {
     }
 
     // Vapor Trails Toggle
-    if (this.vaporToggle) {
-      this.vaporToggle.addEventListener('click', () => {
-        this.vaporTrailsEnabled = !this.vaporTrailsEnabled;
-        this.vaporToggle.textContent = this.vaporTrailsEnabled ? 'VAPOR TRAILS: ON' : 'VAPOR TRAILS: OFF';
-        localStorage.setItem('vaporTrails', this.vaporTrailsEnabled ? 'on' : 'off');
-        this.audio.playSound('click');
-      });
-      // Parallax scroll
-      window.addEventListener('scroll', () => {
-        if (!this.vaporTrailsEnabled) return;
-        const y = window.scrollY;
-        const crt = document.getElementById('crt');
-        const noise = document.getElementById('noise');
-        if (crt) crt.style.transform = `translateY(${y * -0.02}px)`;
-        if (noise) noise.style.transform = `translateY(${y * -0.04}px)`;
-      }, { passive: true });
-      this.vaporToggle.textContent = this.vaporTrailsEnabled ? 'VAPOR TRAILS: ON' : 'VAPOR TRAILS: OFF';
-    }
+    // Parallax scroll always on
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      const crt = document.getElementById('crt');
+      const noise = document.getElementById('noise');
+      if (crt) crt.style.transform = `translateY(${y * -0.02}px)`;
+      if (noise) noise.style.transform = `translateY(${y * -0.04}px)`;
+    }, { passive: true });
     
     // Show native cursor over interactive elements
     const interactiveSelector = 'button, .social-btn, a, .pump-link';
@@ -934,12 +923,6 @@ class VapeApp {
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.smokeColor = btn.getAttribute('data-color');
-        const list = document.getElementById('flavors');
-        const toggle = document.getElementById('flavor-toggle');
-        if (list && toggle && !list.hasAttribute('hidden')) {
-          list.setAttribute('hidden', '');
-          toggle.textContent = 'SELECT FLAVOR ▾';
-        }
       });
     });
     const toggle = document.getElementById('flavor-toggle');
@@ -951,14 +934,6 @@ class VapeApp {
           list.removeAttribute('hidden');
           toggle.textContent = 'SELECT FLAVOR ▴';
         } else {
-          list.setAttribute('hidden', '');
-          toggle.textContent = 'SELECT FLAVOR ▾';
-        }
-      });
-      document.addEventListener('click', (e) => {
-        const dd = document.querySelector('.flavor-dropdown');
-        if (!dd) return;
-        if (!dd.contains(e.target) && !list.hasAttribute('hidden')) {
           list.setAttribute('hidden', '');
           toggle.textContent = 'SELECT FLAVOR ▾';
         }
