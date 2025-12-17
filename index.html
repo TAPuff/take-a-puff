@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>TAKE A PUFF ($PUFF)</title>
   
   <!-- EXTERNAL LIBS -->
@@ -16,10 +16,31 @@
 </head>
 <body class="loading">
 
-  <!-- OVERLAYS (NON-INTERACTIVE) -->
+  <!-- OVERLAYS -->
   <div id="crt" class="overlay"></div>
   <div id="noise" class="overlay"></div>
-  <div class="pixel-cursor"></div>
+  <div id="smoke-flood" class="overlay">
+    <div class="flood-warning">SWIPE TO CLEAR FOG</div>
+  </div>
+  <div class="pixel-cursor">
+    <div class="cursor-trail"></div>
+  </div>
+
+  <!-- CA MODAL -->
+  <div id="ca-modal" class="modal-overlay" aria-hidden="true">
+    <div class="modal">
+      <h3>CONTRACT ADDRESS</h3>
+      <code id="contract-address">COMING_SOON_ON_SOLANA_CHAIN_XYZ</code>
+      <div class="modal-actions">
+        <button id="copy-ca-btn" data-sound="click">COPY</button>
+        <button id="close-ca-modal" data-sound="click">CLOSE</button>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- WARNINGS -->
+  <div id="overpuff-warning" class="glitch-text">BRO... CHILL</div>
+  <div id="burnt-coil" class="glitch-text">COIL BURNT 💀</div>
 
   <!-- HEADER -->
   <header>
@@ -30,10 +51,18 @@
   <!-- MAIN APP -->
   <main>
     <div id="vape-zone">
+      
+      <!-- METERS -->
+      <div id="nicotine-meter-container">
+        <div class="meter-label">NIC RUSH</div>
+        <div class="meter-bar"><div id="nicotine-level"></div></div>
+      </div>
+
       <!-- VAPE IMAGE -->
       <div class="vape-container">
         <img id="vape" src="images/vape.png" alt="Vape Device">
         <div id="smoke-origin"></div>
+        <div id="perfect-ring"></div>
       </div>
       
       <p class="hint">CLICK & HOLD TO PUFF</p>
@@ -46,15 +75,28 @@
 
       <!-- FLAVOR SELECTOR -->
       <div id="flavors">
-        <button data-color="#7DF9FF">❄ BLUE FREEZE</button>
-        <button data-color="#FF4FD8" class="active">🍓 PINK RUSH</button>
-        <button data-color="#C084FC">🍇 GRAPE HAZE</button>
-        <button data-color="#6EE7B7">🌿 MINT CLOUD</button>
-        <button data-color="#FFB199">🍑 PEACH POP</button>
+        <!-- Default Flavors -->
+        <button data-color="#7DF9FF" data-sound="click">❄ BLUE FREEZE</button>
+        <button data-color="#FF4FD8" class="active" data-sound="click">🍓 PINK RUSH</button>
+        <button data-color="#C084FC" data-sound="click">🍇 GRAPE HAZE</button>
+        <button data-color="#6EE7B7" data-sound="click">🌿 MINT CLOUD</button>
+        <button data-color="#FFB199" data-sound="click">🍑 PEACH POP</button>
+        <!-- Secret flavors will be injected here via JS -->
       </div>
 
       <!-- ACTIONS -->
-      <button id="share-btn">📸 SHARE SCORE</button>
+      <div class="action-row">
+        <button id="share-btn" data-sound="camera">📸 SHARE SCORE</button>
+        <button id="ca-btn" data-sound="click">REVEAL CA</button>
+      </div>
+      
+      <!-- SOCIALS -->
+      <div class="social-row">
+        <a href="#" target="_blank" class="social-btn" data-platform="discord">DISCORD</a>
+        <a href="#" target="_blank" class="social-btn" data-platform="x">X (TWITTER)</a>
+        <a href="#" target="_blank" class="social-btn" data-platform="telegram">TELEGRAM</a>
+      </div>
+
     </div>
   </main>
 
@@ -77,9 +119,19 @@
 
     <section class="info-box">
       <h2>HOW TO BUY</h2>
-      <p>Buy → Hold → Puff → Repeat</p>
+      <p>
+        <a href="https://pump.fun" target="_blank" class="pump-link">BUY ON PUMP.FUN</a>
+        <br>Buy → Hold → Puff → Repeat
+      </p>
     </section>
   </div>
+
+  <!-- POWERED BY SOLANA -->
+  <footer class="solana-footer">
+    <span>POWERED BY</span>
+    <img src="images/solana-sol-logo.png" alt="Solana Logo" class="solana-logo">
+    <span>SOLANA</span>
+  </footer>
 
   <!-- SCRIPT -->
   <script src="script.js" defer></script>
