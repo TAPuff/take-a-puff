@@ -1,3 +1,4 @@
+/* ================= GENERAL ================= */
 * {
   box-sizing: border-box;
   image-rendering: pixelated;
@@ -19,19 +20,65 @@ body {
   cursor: none;
 }
 
+/* ===== CRT & NOISE ===== */
+#crt, #noise, #smoke-layer, .pixel-cursor, .cursor-smoke {
+  pointer-events: none;
+}
+
+#crt {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0,0,0,.18),
+    rgba(0,0,0,.18) 1px,
+    transparent 2px
+  );
+  z-index: 999;
+  opacity: 0;
+}
+
+#noise {
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect width='1' height='1' fill='white'/%3E%3C/svg%3E");
+  opacity: .05;
+  animation: flicker .15s infinite;
+  z-index: 998;
+}
+
+@keyframes flicker {
+  0% { opacity: .04 }
+  50% { opacity: .08 }
+  100% { opacity: .04 }
+}
+
 /* ===== HEADER ===== */
 header {
   text-align: center;
-  padding: 30px 10px;
+  padding: 30px 10px 10px;
+  position: relative;
+  z-index: 50;
 }
 
 h1 {
-  font-family: 'Press Start 2P';
+  font-family: 'Press Start 2P', monospace;
   font-size: clamp(42px, 9vw, 78px);
-  text-shadow: 4px 4px #000;
+  letter-spacing: 6px;
+  text-shadow: 4px 4px #000, 10px 10px #ff4fd8; /* pink highlight glow */
+  margin: 0;
+  color: #fff;
 }
 
-/* ===== VAPE ZONE ===== */
+.ticker {
+  font-size: clamp(32px, 6vw, 52px);
+  color: #7DF9FF; /* blue highlight */
+  text-shadow: 3px 3px #000;
+  display: block;
+  margin-top: 8px;
+}
+
+/* ===== VAPE ===== */
 #vape-zone {
   position: relative;
   text-align: center;
@@ -40,76 +87,29 @@ h1 {
 
 #vape {
   width: clamp(220px, 45vw, 360px);
+  max-width: 90vw;
   cursor: pointer;
-  z-index: 5;
-  position: relative;
+  transition: transform 0.1s steps(2);
+}
+
+#vape:active {
+  transform: scale(0.96);
 }
 
 .hint {
-  font-family: 'Press Start 2P';
+  font-family: 'Press Start 2P', monospace;
   font-size: 10px;
   opacity: 0.7;
+  margin-top: 8px;
 }
 
-/* ===== SMOKE LAYER ===== */
-#smoke-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 10;
-}
-
-/* ===== SMOKE PARTICLES ===== */
-.smoke {
-  position: fixed;
-  width: 20px;
-  height: 20px;
-  background: pink;
-  border-radius: 50%;
-  filter: blur(2px);
-  opacity: 0.6;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  animation: smokeFloat 3s ease-out forwards;
-}
-
-@keyframes smokeFloat {
-  from {
-    transform: translate(-50%, 0) scale(0.8);
-    opacity: 0.6;
-  }
-  to {
-    transform: translate(-50%, -180px) scale(1.4);
-    opacity: 0;
-  }
-}
-
-/* ===== CURSOR SMOKE ===== */
-.cursor-smoke {
-  position: fixed;
-  width: 12px;
-  height: 12px;
-  background: #ff4fd8;
-  border-radius: 50%;
-  filter: blur(2px);
-  opacity: 0.5;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-  animation: cursorFade 1.5s linear forwards;
-}
-
-@keyframes cursorFade {
-  to {
-    opacity: 0;
-    transform: translate(-50%, -30px) scale(1.2);
-  }
-}
-
-/* ===== COUNTER ===== */
+/* ===== PUFF COUNTER ===== */
 #counter {
-  font-family: 'Press Start 2P';
+  font-family: 'Press Start 2P', monospace;
   font-size: 14px;
-  margin-top: 16px;
+  margin: 16px auto 0 auto;
+  color: #ffffff;
+  text-shadow: 2px 2px 0 #ff00ff, -2px -2px 0 #ff00ff; /* pixel outline */
 }
 
 /* ===== FLAVORS ===== */
@@ -117,34 +117,128 @@ h1 {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  gap: 12px;
   margin: 30px 10px;
 }
 
 #flavors button {
-  font-family: 'Press Start 2P';
+  font-family: 'Press Start 2P', monospace;
   font-size: 10px;
+  padding: 10px;
   background: black;
   color: white;
   border: 3px solid white;
-  padding: 8px;
   cursor: pointer;
+}
+
+#flavors button.active {
+  background: #ff4fd8;
+  color: black;
+}
+
+/* ===== SHARE BUTTON ===== */
+#share-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  background: #ff77cc;
+  color: #fff;
+  border: 2px solid #ffd700;
+  padding: 6px 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-shadow: 0 0 4px #fff;
+  transition: transform 0.1s ease;
+}
+
+#share-btn:active {
+  transform: scale(0.95);
+}
+
+/* ===== SMOKE ===== */
+.smoke {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0.4;
+  filter: blur(3px);
+  pointer-events: none;
+  image-rendering: pixelated;
+}
+
+.cursor-smoke {
+  width: 14px;
+  height: 14px;
+  background: #FF4FD8;
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.8);
+  z-index: 9999;
+  mix-blend-mode: screen;
+  filter: blur(2px);
+  opacity: 0.6;
+  transition: width 0.2s, height 0.2s, background 0.2s;
+}
+
+.cursor-smoke.smoke-large {
+  width: 20px;
+  height: 20px;
+  opacity: 0.8;
+}
+
+/* GOLDEN PUFF SMOKE */
+[data-color="#FFD700"].smoke,
+.smoke[data-color="#FFD700"] {
+  background: #FFD700;
+  box-shadow: 0 0 12px #FFD700, 0 0 20px #fff8a0;
+  opacity: 0.5;
 }
 
 /* ===== SECTIONS ===== */
 section {
   text-align: center;
   padding: 40px 20px;
-  opacity: 1;
-  transform: none;
+  opacity: 0;
+  transform: translateY(20px);
 }
 
-#vape-mouth {
-  position: absolute;
-  top: 6%;            /* ← move this slightly if needed */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 2px;
-  pointer-events: none;
+section.show {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all .5s steps(2);
+}
+
+/* ===== SCREEN ZOOM ===== */
+body.zoom {
+  transform: scale(1.02);
+  transition: transform 0.15s ease;
+}
+
+/* ===== UNLOCK OVERLAY ===== */
+#unlock-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 120, 190, 0.35);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+#unlock-box {
+  background: #ffb6d9;
+  padding: 28px 34px;
+  border-radius: 18px;
+  font-family: 'Press Start 2P', monospace;
+  text-align: center;
+  box-shadow: 0 0 40px #ffd700;
+}
+
+/* ===== MOBILE SAFETY ===== */
+#vape {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  pointer-events: auto;
 }
