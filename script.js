@@ -15,14 +15,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const shareBtn = document.getElementById("share-btn");
 
   // ===== SHARE PUFF SCORE =====
-  shareBtn.addEventListener("click", () => {
-    navigator.clipboard.writeText(`💨 TAKE A PUFF 💨\nPUFFS: ${puffCount}\nLONG DRAGS: ${overpuff}\nTicker: $PUFF`);
-    shareBtn.innerText = "COPIED!";
-    setTimeout(() => shareBtn.innerText = "📸 SHARE PUFF SCORE", 1200);
+shareBtn.addEventListener("click", () => {
+  html2canvas(document.getElementById("counter")).then(canvas => {
+    canvas.toBlob(blob => {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "puff-score.png";
+      link.click();
+    });
   });
+});
 
   // ===== SPAWN SMOKE =====
-  function spawnSmoke() {
+  function spawnSmoke(isLongDrag = false) {
     const mouth = document.getElementById("vape-mouth");
     if (!mouth) return;
 
@@ -31,11 +36,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const smoke = document.createElement("div");
       smoke.className = "smoke";
 
+      if (isLongDrag) {
+        smoke.classList.add("long-drag"); // <-- add this here
+    }
+
       const spreadX = (Math.random() - 0.5) * 100; // wider
       const size = 30 + Math.random() * 50; // bigger smoke
 
-      smoke.style.left = rect.left + rect.width / 2 + spreadX + "px";
-      smoke.style.top = rect.top + "px";
+      smoke.style.left = window.scrollX + rect.left + rect.width / 2 + spreadX + "px";
+      smoke.style.top = window.scrollY + rect.top + "px";
       smoke.style.width = size + "px";
       smoke.style.height = size + "px";
       smoke.style.background = smokeColor;
@@ -65,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     dragging = true;
     spawnSmoke();
-    interval = setInterval(spawnSmoke, 150);
+    interval = setInterval(() => spawnSmoke(false), 150);
     dragStartTime = performance.now();
   }
 
@@ -78,14 +87,17 @@ document.addEventListener("DOMContentLoaded", () => {
     puffCounter.textContent = puffCount;
     localStorage.setItem("puffs", puffCount);
 
-    const hold = performance.now() - dragStartTime;
-    if (hold >= 2000) { // long drag
-      overpuff++;
-      longCounter.textContent = overpuff;
-      localStorage.setItem("longPuffs", overpuff);
-      triggerCRT();
-      if (overpuff % 3 === 0) triggerCough(); // every 3 long drags
-    }
+const hold = Math.round(performance.now() - dragStartTime);
+if (hold >= 2000) { // long drag
+  overpuff++;
+  longCounter.textContent = overpuff;
+  localStorage.setItem("longPuffs", overpuff);
+  triggerCRT();
+  if (overpuff % 3 === 0) triggerCough();
+
+  // Spawn bigger smoke for long drag
+  spawnSmoke(true); // <-- call spawnSmoke with "long drag" flag
+}
 
     playExhale();
 

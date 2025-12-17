@@ -85,27 +85,27 @@ h1, .ticker {
 
 @keyframes glowFlicker {
   0% {
-    text-shadow: 4px 4px #000, 10px 10px #ff4fd8;
+    text-shadow: 4px 4px #000, 10px 10px #ff4fd8 !important;
     opacity: 1;
   }
   20% {
-    text-shadow: 4px 4px #000, 10px 10px #ff69eb;
+    text-shadow: 4px 4px #000, 10px 10px #ff69eb !important;
     opacity: 0.95;
   }
   40% {
-    text-shadow: 4px 4px #000, 10px 10px #ff00ff;
+    text-shadow: 4px 4px #000, 10px 10px #ff00ff !important;
     opacity: 0.9;
   }
   60% {
-    text-shadow: 4px 4px #000, 10px 10px #ff85c2;
+    text-shadow: 4px 4px #000, 10px 10px #ff85c2 !important;
     opacity: 0.98;
   }
   80% {
-    text-shadow: 4px 4px #000, 10px 10px #ff4fd8;
+    text-shadow: 4px 4px #000, 10px 10px #ff4fd8 !important;
     opacity: 0.96;
   }
   100% {
-    text-shadow: 4px 4px #000, 10px 10px #ff69eb;
+    text-shadow: 4px 4px #000, 10px 10px #ff69eb !important;
     opacity: 1;
   }
 }
@@ -278,4 +278,24 @@ body.zoom {
   -webkit-user-select: none;
   user-select: none;
   pointer-events: auto;
+}
+
+/* ===== VAPE MOUTH (Smoke Origin) ===== */
+#vape-mouth {
+  position: absolute;
+  width: 10px;            /* small dot at the mouthpiece */
+  height: 10px;
+  bottom: 85%;            /* adjust this so it's exactly at the mouth */
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;   /* make sure it doesn't interfere with clicks */
+  z-index: 5;
+  background: transparent; /* invisible */
+}
+
+/* ===== LONG DRAG SMOKE (Optional) ===== */
+.smoke.long-drag {
+  transform: scale(2);     /* bigger than normal smoke */
+  opacity: 0.8 !important;
+  filter: blur(6px) !important;
 }
