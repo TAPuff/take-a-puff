@@ -1,78 +1,141 @@
-* { box-sizing: border-box; image-rendering: pixelated; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+
 body {
+  margin: 0;
   font-family: 'VT323', monospace;
-  background: linear-gradient(180deg, #ffd1e8, #ff85c2, #ff4fd8, #ff69eb, #ffb3d9);
+  background: linear-gradient(
+    180deg,
+    #ffd1e8,
+    #ff85c2,
+    #ff4fd8,
+    #ff69eb,
+    #ffb3d9
+  );
   color: white;
-  cursor: none;
   overflow-x: hidden;
+  cursor: none;
+}
+
+/* ===== HEADER ===== */
+header {
+  text-align: center;
+  padding: 30px 10px;
+}
+
+h1 {
+  font-family: 'Press Start 2P';
+  font-size: clamp(42px, 9vw, 78px);
+  text-shadow: 4px 4px #000;
+}
+
+/* ===== VAPE ZONE ===== */
+#vape-zone {
+  position: relative;
+  text-align: center;
+  margin-top: 10px;
+}
+
+#vape {
+  width: clamp(220px, 45vw, 360px);
+  cursor: pointer;
+  z-index: 5;
   position: relative;
 }
 
-/* CRT & NOISE */
-#crt, #noise { position: fixed; inset: 0; pointer-events: none; z-index: 9998; }
-#crt { background: repeating-linear-gradient(to bottom, rgba(0,0,0,.18) 0, rgba(0,0,0,.18) 1px, transparent 2px); }
-#noise { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect width='1' height='1' fill='white'/%3E%3C/svg%3E"); opacity: .05; animation: flicker .15s infinite; }
+.hint {
+  font-family: 'Press Start 2P';
+  font-size: 10px;
+  opacity: 0.7;
+}
 
-@keyframes flicker { 0%,100% {opacity:.04} 50% {opacity:.08} }
-
-/* HEADER */
-header { text-align: center; padding: 30px 10px 10px; position: relative; z-index: 50; }
-h1 { font-family: 'Press Start 2P'; font-size: clamp(42px,9vw,78px); letter-spacing: 6px; text-shadow: 4px 4px #000, 10px 10px #ff4fd8; }
-.ticker { font-size: clamp(32px,6vw,52px); color: #7DF9FF; text-shadow: 3px 3px #000; display: block; margin-top: 8px; }
-
-/* VAPE ZONE */
-#vape-zone { position: relative; text-align: center; margin-top: 10px; z-index: 50; }
-#vape { width: clamp(220px,45vw,360px); max-width: 90vw; cursor: pointer; transition: transform 0.1s steps(2); }
-#vape:active { transform: scale(0.96); }
-.hint { font-family: 'Press Start 2P'; font-size: 10px; opacity: 0.7; margin-top: 8px; }
-
-/* PUFF COUNTER */
-#counter { font-family: 'Press Start 2P'; font-size: 14px; margin: 16px auto 0; text-shadow: 2px 2px 0 #ff00ff, -2px -2px 0 #ff00ff; }
-
-/* FLAVORS */
-#flavors { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 30px 10px; }
-#flavors button { font-family: 'Press Start 2P'; font-size: 10px; padding: 10px; background: black; color: white; border: 3px solid white; cursor: pointer; }
-#flavors button.active { background: #ff4fd8; color: black; }
-
-/* SHARE BUTTON */
-#share-btn { font-family: 'Press Start 2P'; font-size: 12px; background: #ff77cc; color: #fff; border: 2px solid #ffd700; padding: 6px 12px; margin-top: 6px; border-radius: 6px; cursor: pointer; text-shadow: 0 0 4px #fff; }
-
-/* SMOKE LAYER */
-#smoke-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 40; }
-
-/* SMOKE */
-.smoke {
+/* ===== SMOKE LAYER ===== */
+#smoke-layer {
   position: absolute;
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  opacity: .55;
-  filter: blur(1px);
-  animation: smokeFloat 4s ease-out forwards;
-}
-@keyframes smokeFloat {
-  0% { transform: translate(0,0) scale(.8); opacity:.65; }
-  100% { transform: translate(var(--drift), -320px) scale(1.8); opacity:0; }
+  top: 0;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+  z-index: 10;
 }
 
-/* CURSOR TRAIL */
-.pixel-cursor {
-  width: 14px; height: 14px;
-  background: #FF4FD8;
-  border-radius: 50%;
+/* ===== SMOKE PARTICLES ===== */
+.smoke {
   position: fixed;
-  pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.8);
-  z-index: 9999;
-  mix-blend-mode: screen;
+  width: 20px;
+  height: 20px;
+  background: pink;
+  border-radius: 50%;
   filter: blur(2px);
   opacity: 0.6;
-  transition: width 0.2s, height 0.2s, background 0.2s;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: smokeFloat 3s ease-out forwards;
 }
 
-/* SECTIONS */
-section { text-align: center; padding: 40px 20px; opacity: 0; transform: translateY(20px); position: relative; z-index: 10; }
-section.show { opacity:1; transform:translateY(0); transition: all .5s steps(2); }
+@keyframes smokeFloat {
+  from {
+    transform: translate(-50%, 0) scale(0.8);
+    opacity: 0.6;
+  }
+  to {
+    transform: translate(-50%, -180px) scale(1.4);
+    opacity: 0;
+  }
+}
 
-/* OVERLAY */
-#unlock-overlay { position: fixed; inset:0; background: rgba(255,120,190,.35); backdrop-filter: blur(6px); display:flex; align-items:center; justify-content:center; z-index:9999; }
-#unlock-box { background:#ffb6d9; padding:28px 34px; border-radius:18px; font-family:'Press Start 2P'; text-align:center; box-shadow:0 0 40px #ffd700; }
+/* ===== CURSOR SMOKE ===== */
+.cursor-smoke {
+  position: fixed;
+  width: 12px;
+  height: 12px;
+  background: #ff4fd8;
+  border-radius: 50%;
+  filter: blur(2px);
+  opacity: 0.5;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: cursorFade 1.5s linear forwards;
+}
+
+@keyframes cursorFade {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -30px) scale(1.2);
+  }
+}
+
+/* ===== COUNTER ===== */
+#counter {
+  font-family: 'Press Start 2P';
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+/* ===== FLAVORS ===== */
+#flavors {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 30px 10px;
+}
+
+#flavors button {
+  font-family: 'Press Start 2P';
+  font-size: 10px;
+  background: black;
+  color: white;
+  border: 3px solid white;
+  padding: 8px;
+  cursor: pointer;
+}
+
+/* ===== SECTIONS ===== */
+section {
+  text-align: center;
+  padding: 40px 20px;
+}
