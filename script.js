@@ -749,11 +749,14 @@ class VapeApp {
       this.floodText.style.display = 'none';
     }
 
-    // Ambient background smoke occasionally
-    if (!this.isDragging && Math.random() < 0.02) {
-      const x = Math.random() * window.innerWidth;
-      const y = window.innerHeight - 50 - Math.random() * 100;
-      this.spawnAmbientSmoke(x, y);
+    // Ambient background smoke more prominent
+    if (!this.isDragging && Math.random() < 0.06) {
+      const count = 1 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < count; i++) {
+        const x = Math.random() * window.innerWidth;
+        const y = window.innerHeight - 30 - Math.random() * 140;
+        this.spawnAmbientSmoke(x, y);
+      }
     }
 
     requestAnimationFrame(() => this.gameLoop());
@@ -762,19 +765,19 @@ class VapeApp {
   spawnAmbientSmoke(x, y) {
     const smoke = document.createElement('div');
     smoke.className = 'smoke';
-    const size = 20 + Math.random() * 30;
-    const color = 'rgba(255,255,255,0.3)';
+    const size = 30 + Math.random() * 40;
+    const color = 'rgba(255,255,255,0.6)';
     smoke.style.width = `${size}px`;
     smoke.style.height = `${size}px`;
     smoke.style.left = `${x}px`;
     smoke.style.top = `${y}px`;
     smoke.style.background = color;
     document.body.appendChild(smoke);
-    const destY = y - (100 + Math.random() * 150);
+    const destY = y - (160 + Math.random() * 220);
     smoke.animate([
-      { transform: 'scale(0.6)', opacity: 0.4 },
-      { transform: `translate(0, ${destY - y}px) scale(2)`, opacity: 0 }
-    ], { duration: 2500, easing: 'ease-out' }).onfinish = () => smoke.remove();
+      { transform: 'scale(0.8)', opacity: 0.7 },
+      { transform: `translate(0, ${destY - y}px) scale(2.8)`, opacity: 0 }
+    ], { duration: 3500, easing: 'ease-out' }).onfinish = () => smoke.remove();
   }
   bindFlavors() {
     const buttons = document.querySelectorAll('#flavors button');

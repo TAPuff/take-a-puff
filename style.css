@@ -96,13 +96,18 @@ img {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, rgba(0,0,0,0) 50%, rgba(255,255,255,0.04) 100%);
-  background-size: 100% 4px;
-  animation: scan 4s linear infinite;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.12) 0%, rgba(0,0,0,0) 50%, rgba(255,255,255,0.12) 100%);
+  background-size: 100% 3px;
+  animation: scan 2.2s linear infinite, flicker 1.2s steps(60) infinite;
 }
 @keyframes scan {
   0% { transform: translateY(0); }
   100% { transform: translateY(4px); }
+}
+@keyframes flicker {
+  0% { opacity: 0.9; }
+  50% { opacity: 1; }
+  100% { opacity: 0.9; }
 }
 
 /* ================= WARNINGS ================= */
@@ -172,7 +177,7 @@ h1 {
   text-shadow: 3px 3px 0 #000;
   margin-top: 10px;
   position: relative;
-  animation: tickerGlow 3s ease-in-out infinite;
+  animation: tickerGlow 2.5s ease-in-out infinite, tickerWobble 3.5s ease-in-out infinite;
 }
 
 @keyframes float {
@@ -182,6 +187,11 @@ h1 {
 @keyframes tickerGlow {
   0%, 100% { filter: drop-shadow(0 0 0px var(--blue)); }
   50% { filter: drop-shadow(0 0 6px var(--blue)); }
+}
+@keyframes tickerWobble {
+  0%,100% { transform: translateY(0) }
+  25% { transform: translateY(-2px) }
+  75% { transform: translateY(2px) }
 }
 
 .tagline {
@@ -207,19 +217,21 @@ h1 {
   justify-content: center;
   align-items: center;
   padding: 10px;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
+  background: linear-gradient(90deg, rgba(255,79,216,0.85), rgba(255,105,235,0.85));
+  backdrop-filter: blur(6px);
   border-bottom: 2px solid #fff;
+  box-shadow: 0 6px 20px rgba(255,79,216,0.5);
 }
 .top-nav .nav-link {
   font-family: 'Press Start 2P', monospace;
   font-size: 10px;
-  color: #fff;
+  color: #000;
   text-decoration: none;
   padding: 8px 10px;
-  border: 2px solid #fff;
-  background: #000;
+  border: 2px solid #000;
+  background: #fff;
   transition: transform 0.2s;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
 }
 .top-nav .nav-link:hover { transform: translateY(-2px); }
 
@@ -382,11 +394,18 @@ button.active {
 }
 
 .social-btn {
-  background: #5865F2; /* Discord default */
-  font-size: 9px;
+  background: rgba(0,0,0,0.4);
+  font-size: 0;
+  border-radius: 10px;
 }
 .social-btn[data-platform="x"] { background: #000; }
 .social-btn[data-platform="telegram"] { background: #229ED9; }
+.social-icon {
+  width: 36px;
+  height: 36px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+}
 
 /* ================= INFO SECTIONS ================= */
 .content-wrapper {
@@ -426,8 +445,8 @@ button.active {
 .solana-footer {
   text-align: center;
   padding: 40px;
-  background: #000;
-  color: var(--solana-green);
+  background: linear-gradient(180deg, #ffffff, #f7f7f7);
+  color: #000;
   font-family: 'Press Start 2P', monospace;
   font-size: 12px;
   display: flex;
@@ -469,8 +488,8 @@ button.active {
   position: fixed;
   pointer-events: none;
   border-radius: 50%;
-  filter: blur(8px); /* Blurrier */
-  opacity: 0.8;
+  filter: blur(10px);
+  opacity: 0.9;
   z-index: 1000; 
 }
 

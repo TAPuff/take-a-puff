@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>TAKE A PUFF ($PUFF)</title>
-  <link rel="icon" type="image/png" href="images/vape.png" />
+  <link rel="icon" type="image/png" href="images/favicon.png" />
   
   <!-- EXTERNAL LIBS -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -43,19 +43,20 @@
   <div id="overpuff-warning" class="glitch-text">BRO... CHILL</div>
   <div id="burnt-coil" class="glitch-text">COIL BURNT 💀</div>
 
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <a href="#section-about" class="nav-link">ABOUT</a>
+    <a href="#section-socials" class="nav-link">SOCIALS</a>
+    <a href="#section-share" class="nav-link">SHARE SCORE</a>
+    <a href="#section-ca" class="nav-link">REVEAL CA</a>
+  </nav>
+
   <!-- HEADER -->
   <header>
     <h1>TAKE A PUFF</h1>
     <span class="ticker">$PUFF</span>
     <div class="tagline">RELAX, TAKE A SMOKE BREAK</div>
   </header>
-  
-  <!-- TOP NAV -->
-  <nav class="top-nav">
-    <a href="#section-socials" class="nav-link">SOCIALS</a>
-    <a href="#section-share" class="nav-link">SHARE SCORE</a>
-    <a href="#section-ca" class="nav-link">REVEAL CA</a>
-  </nav>
 
   <!-- MAIN APP -->
   <main>
@@ -101,7 +102,7 @@
 
   <!-- INFO SECTIONS -->
   <div class="content-wrapper">
-    <section class="info-box">
+    <section class="info-box" id="section-about">
       <h2>WHAT IS $PUFF?</h2>
       <p>A pixelated vaporwave meme coin built for clicks, clouds, and chaos.</p>
     </section>
@@ -129,9 +130,15 @@
   <section id="section-socials" class="section">
     <h2>SOCIALS</h2>
     <div class="social-row">
-      <a href="#" target="_blank" class="social-btn" data-platform="discord">DISCORD</a>
-      <a href="#" target="_blank" class="social-btn" data-platform="x">X (TWITTER)</a>
-      <a href="#" target="_blank" class="social-btn" data-platform="telegram">TELEGRAM</a>
+      <a href="#" target="_blank" class="social-btn" data-platform="discord">
+        <img src="images/discord-logo.png" alt="Discord" class="social-icon" />
+      </a>
+      <a href="#" target="_blank" class="social-btn" data-platform="x">
+        <img src="images/x-logo.png" alt="X (Twitter)" class="social-icon" />
+      </a>
+      <a href="#" target="_blank" class="social-btn" data-platform="telegram">
+        <img src="images/telegram-logo.png" alt="Telegram" class="social-icon" />
+      </a>
     </div>
   </section>
 
