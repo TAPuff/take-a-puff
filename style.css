@@ -81,6 +81,7 @@ h1 {
 /* ===== HEADER & TICKER GLOW ===== */
 h1, .ticker {
   animation: glowFlicker 1.5s infinite alternate;
+  will-change: text-shadow, opacity;
 }
 
 @keyframes glowFlicker {
@@ -283,14 +284,14 @@ body.zoom {
 /* ===== VAPE MOUTH (Smoke Origin) ===== */
 #vape-mouth {
   position: absolute;
-  width: 10px;            /* small dot at the mouthpiece */
+  width: 10px;
   height: 10px;
-  bottom: 85%;            /* adjust this so it's exactly at the mouth */
+  top: 38%;      /* roughly at mouth height, adjust until it looks right */
   left: 50%;
   transform: translateX(-50%);
-  pointer-events: none;   /* make sure it doesn't interfere with clicks */
+  pointer-events: none;
   z-index: 5;
-  background: transparent; /* invisible */
+  background: transparent;
 }
 
 /* ===== LONG DRAG SMOKE (Optional) ===== */
