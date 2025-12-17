@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const flavorButtons = document.querySelectorAll("#flavors button");
   const smokeLayer = document.getElementById("smoke-layer");
 
+  // PUFF COUNTERS & SECRET
   let puffCount = Number(localStorage.getItem("puffs")) || 0;
   let longDragCount = Number(localStorage.getItem("longDrags")) || 0;
   let secretUnlocked = localStorage.getItem("secret") === "true";
@@ -11,14 +12,14 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragStart = null;
   let interval = null;
 
-  // UPDATE COUNTERS
+  // Update counters
   function updateCounter() {
     document.getElementById("puff-count").textContent = puffCount;
     document.getElementById("long-drag-count").textContent = longDragCount;
   }
   updateCounter();
 
-  // FLAVOR SELECTION
+  // Flavor selection
   flavorButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       flavorButtons.forEach(b => b.classList.remove("active"));
@@ -27,11 +28,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // SPAWN SMOKE
+  // Spawn smoke
   function spawnSmoke(hold = 500, burst = false) {
     const vapeRect = vape.getBoundingClientRect();
     const vapeX = vapeRect.left + vapeRect.width / 2;
-    const vapeY = vapeRect.top + vapeRect.height / 2;
+    const vapeY = vapeRect.top + vapeRect.height * 0.1;
 
     const intensity = Math.min(hold / 600, 5);
     const baseCount = burst ? 20 : 6;
@@ -46,12 +47,12 @@ document.addEventListener("DOMContentLoaded", () => {
       smoke.style.setProperty("--drift", `${(Math.random() - 0.5) * 100}px`);
       smokeLayer.appendChild(smoke);
 
-      // Remove after animation
+      // Remove after CSS animation
       smoke.addEventListener("animationend", () => smoke.remove());
     }
   }
 
-  // DRAG INTERACTIONS
+  // Drag interactions
   function startDrag(e) {
     e.preventDefault();
     dragging = true;
@@ -105,17 +106,44 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("flavors").appendChild(btn);
   }
   if (secretUnlocked) unlockSecretFlavor();
-});
 
-  // ===== SECTION OBSERVER =====
-  const sections = document.querySelectorAll("section");
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        entry.target.classList.add("show");
-      }
+  // Cursor trail
+  const mainCursor = document.createElement("div");
+  mainCursor.className = "pixel-cursor main";
+  document.body.appendChild(mainCursor);
+
+  const trailElements = [];
+  const maxTrail = 25;
+
+  document.addEventListener("mousemove", e => {
+    mainCursor.style.left = e.clientX + "px";
+    mainCursor.style.top = e.clientY + "px";
+
+    const trail = document.createElement("div");
+    trail.className = "pixel-cursor";
+    trail.style.left = e.clientX + "px";
+    trail.style.top = e.clientY + "px";
+    trail.style.background = smokeColor;
+    document.body.appendChild(trail);
+    trailElements.push(trail);
+
+    const driftX = (Math.random() - 0.5) * 20;
+    const driftY = -20 - Math.random() * 40;
+
+    trail.animate([
+      { transform: "translate(-50%, -50%) translate(0,0) scale(0.8)", opacity: 0.6 },
+      { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
+    ], {
+      duration: 2000 + Math.random() * 2000,
+      easing: "ease-out",
+      fill: "forwards"
     });
-  },{threshold: 0.2});
 
-  sections.forEach(sec => observer.observe(sec));
+    if (trailElements.length > maxTrail) {
+      const old = trailElements.shift();
+      old.remove();
+    }
+
+    setTimeout(() => { if (trail.parentNode) trail.remove(); }, 4000);
+  });
 });
