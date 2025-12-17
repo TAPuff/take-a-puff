@@ -8,24 +8,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let dragStartTime = 0;
 
 // ===== SFX =====
-  const inhaleSFX = new Audio("sounds/inhale.mp3");
-  const exhaleSFX = new Audio("sounds/exhale.mp3");
-  inhaleSFX.preload = "auto";
-  exhaleSFX.preload = "auto";
-  
+  // Uses window.vapeAudio from audio-synth.js
+
   function playInhale() {
-    inhaleSFX.currentTime = 0;
-    inhaleSFX.play().catch(() => {});
+    if (window.vapeAudio) window.vapeAudio.startInhale();
   }
 
   function playExhale() {
-    exhaleSFX.currentTime = 0;
-    exhaleSFX.play().catch(() => {});
+    if (window.vapeAudio) {
+      window.vapeAudio.stopInhale();
+      window.vapeAudio.playExhale();
+    }
   }
 
   function unlockAudio() {
-    inhaleSFX.play().then(() => inhaleSFX.pause()).catch(() => {});
-    exhaleSFX.play().then(() => exhaleSFX.pause()).catch(() => {});
+    if (window.vapeAudio) window.vapeAudio.init();
     document.removeEventListener("touchstart", unlockAudio);
     document.removeEventListener("mousedown", unlockAudio);
   }
@@ -129,7 +126,6 @@ document.querySelectorAll(".smoke").forEach(smoke => {
 
     setTimeout(() => smoke.remove(), 7000);
   }
-}
 
   // ===== DRAG PUFF =====
   function startDrag(e) {
@@ -161,8 +157,6 @@ function endDrag() {
   }
 
   // Force unlock audio
-  inhaleSFX.play().catch(() => {});
-  exhaleSFX.play().catch(() => {});
   playExhale();
 
   if (puffCount >= 100) unlockSecretFlavor();
@@ -250,3 +244,5 @@ function revealSections() {
 }
 window.addEventListener("scroll", revealSections);
 window.addEventListener("load", revealSections);
+revealSections();
+});
