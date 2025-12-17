@@ -4,42 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TAKE A PUFF ($PUFF)</title>
-
+  
+  <!-- EXTERNAL LIBS -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
-  <!-- PIXEL FONTS -->
+  <!-- FONTS -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  
+  <!-- STYLES -->
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
+<body class="loading">
 
-  <!-- CRT + NOISE -->
-  <div id="crt"></div>
-  <div id="noise"></div>
-  <div id="smoke-layer"></div>
+  <!-- OVERLAYS (NON-INTERACTIVE) -->
+  <div id="crt" class="overlay"></div>
+  <div id="noise" class="overlay"></div>
+  <div class="pixel-cursor"></div>
 
-  <!-- BACKGROUND SMOKE -->
-  <div id="bg-smoke"></div>
-
+  <!-- HEADER -->
   <header>
     <h1>TAKE A PUFF</h1>
     <span class="ticker">$PUFF</span>
   </header>
 
+  <!-- MAIN APP -->
   <main>
-    <!-- VAPE -->
     <div id="vape-zone">
-      <img id="vape" src="images/vape.png" alt="Vape">
-      <div id="vape-mouth"></div>
-      <p class="hint">CLICK TO PUFF</p>
+      <!-- VAPE IMAGE -->
+      <div class="vape-container">
+        <img id="vape" src="images/vape.png" alt="Vape Device">
+        <div id="smoke-origin"></div>
+      </div>
+      
+      <p class="hint">CLICK & HOLD TO PUFF</p>
 
-      <!-- Puff & long drag counters -->
+      <!-- COUNTERS -->
       <div id="counter">
-        PUFFS: <span id="puff-count">0</span><br>
-        LONG DRAGS: <span id="long-drag-count">0</span>
+        <div class="stat">PUFFS: <span id="puff-count">0</span></div>
+        <div class="stat">LONG DRAGS: <span id="long-drag-count">0</span></div>
       </div>
 
-      <!-- FLAVORS -->
+      <!-- FLAVOR SELECTOR -->
       <div id="flavors">
         <button data-color="#7DF9FF">❄ BLUE FREEZE</button>
         <button data-color="#FF4FD8" class="active">🍓 PINK RUSH</button>
@@ -48,35 +53,35 @@
         <button data-color="#FFB199">🍑 PEACH POP</button>
       </div>
 
-      <!-- SHARE BUTTON -->
-      <button id="share-btn">📸 SHARE PUFF SCORE</button>
+      <!-- ACTIONS -->
+      <button id="share-btn">📸 SHARE SCORE</button>
     </div>
   </main>
 
-  <div id="share-area"></div>
-  <div class="pixel-cursor"></div>
+  <!-- INFO SECTIONS -->
+  <div class="content-wrapper">
+    <section class="info-box">
+      <h2>WHAT IS $PUFF?</h2>
+      <p>A pixelated vaporwave meme coin built for clicks, clouds, and chaos.</p>
+    </section>
 
-  <!-- CONTENT SECTIONS -->
-  <section class="glitch">
-    <h2>WHAT IS $PUFF?</h2>
-    <p>A pixelated vaporwave meme coin built for clicks, clouds, and chaos.</p>
-  </section>
+    <section class="info-box">
+      <h2>TOKENOMICS</h2>
+      <p>420,000,000,000 Supply<br>No Tax. Just Puff.</p>
+    </section>
 
-  <section class="glitch">
-    <h2>TOKENOMICS</h2>
-    <p>420,000,000,000 supply<br>No tax. Just puff.</p>
-  </section>
+    <section class="info-box">
+      <h2>ROADMAP</h2>
+      <p>Phase 1: Puff<br>Phase 2: Cloud<br>Phase 3: Total Fog</p>
+    </section>
 
-  <section class="glitch">
-    <h2>ROADMAP</h2>
-    <p>Phase 1: Puff<br>Phase 2: Cloud<br>Phase 3: Total Fog</p>
-  </section>
+    <section class="info-box">
+      <h2>HOW TO BUY</h2>
+      <p>Buy → Hold → Puff → Repeat</p>
+    </section>
+  </div>
 
-  <section class="glitch">
-    <h2>HOW TO BUY</h2>
-    <p>Buy → Hold → Puff → Repeat</p>
-  </section>
-
-  <script src="script.js"></script>
+  <!-- SCRIPT -->
+  <script src="script.js" defer></script>
 </body>
 </html>

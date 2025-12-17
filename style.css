@@ -1,327 +1,245 @@
-/* ================= GENERAL ================= */
+/* ================= RESET & VARS ================= */
+:root {
+  --pink: #ff4fd8;
+  --blue: #7DF9FF;
+  --bg-gradient: linear-gradient(180deg, #ffd1e8, #ff85c2, #ff4fd8, #ff69eb, #ffb3d9);
+}
+
 * {
   box-sizing: border-box;
   image-rendering: pixelated;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
+  padding: 0;
   font-family: 'VT323', monospace;
-  background: linear-gradient(
-    180deg,
-    #ffd1e8,
-    #ff85c2,
-    #ff4fd8,
-    #ff69eb,
-    #ffb3d9
-  );
+  background: var(--bg-gradient);
   color: white;
   overflow-x: hidden;
-  cursor: none;
+  min-height: 100vh;
+  /* Cursor hidden only when JS is active */
+  cursor: none; 
 }
 
-/* ===== CRT & NOISE ===== */
-#crt, #noise, #smoke-layer, .pixel-cursor, .cursor-smoke {
-  pointer-events: none;
+/* Fallback if JS fails */
+body.loading {
+  cursor: auto;
 }
 
-.pixel-cursor {
-  width: 12px;
-  height: 12px;
-  background: white;
+/* ================= OVERLAYS (Z-INDEX: 100+) ================= */
+.overlay {
   position: fixed;
-  z-index: 10000;
-  box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
-  transform: translate(-50%, -50%);
-  display: none; /* hidden by default until moved */
+  inset: 0;
+  pointer-events: none; /* CRITICAL: Allows clicks to pass through */
+  z-index: 100;
 }
 
 #crt {
-  position: fixed;
-  inset: 0;
   background: repeating-linear-gradient(
     to bottom,
-    rgba(0,0,0,.18),
-    rgba(0,0,0,.18) 1px,
+    rgba(0,0,0,.15),
+    rgba(0,0,0,.15) 1px,
     transparent 2px
   );
-  z-index: 999;
-  opacity: 0;
+  opacity: 0.6;
 }
 
 #noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  animation: noiseAnim 0.2s infinite;
+}
+
+@keyframes noiseAnim {
+  0% { transform: translate(0,0); }
+  100% { transform: translate(1px, 1px); }
+}
+
+/* ================= CURSOR (Z-INDEX: 9999) ================= */
+.pixel-cursor {
   position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Crect width='1' height='1' fill='white'/%3E%3C/svg%3E");
-  opacity: .05;
-  animation: flicker .15s infinite;
-  z-index: 998;
+  width: 16px;
+  height: 16px;
+  background: white;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: exclusion;
+  display: none; /* Shown by JS */
 }
 
-@keyframes flicker {
-  0% { opacity: .04 }
-  50% { opacity: .08 }
-  100% { opacity: .04 }
+/* ================= LAYOUT (Z-INDEX: 10) ================= */
+header, main, .content-wrapper {
+  position: relative;
+  z-index: 10;
 }
 
-/* ===== HEADER ===== */
 header {
   text-align: center;
-  padding: 30px 10px 10px;
-  position: relative;
-  z-index: 50;
+  padding: 40px 10px 20px;
 }
 
 h1 {
   font-family: 'Press Start 2P', monospace;
-  font-size: clamp(42px, 9vw, 78px);
-  letter-spacing: 6px;
-  text-shadow: 4px 4px #000, 10px 10px #ff4fd8; /* pink highlight glow */
+  font-size: clamp(32px, 8vw, 64px);
+  color: white;
+  text-shadow: 4px 4px 0 #000, 8px 8px 0 var(--pink);
   margin: 0;
-  color: #fff;
+  animation: float 3s ease-in-out infinite;
 }
 
 .ticker {
-  font-size: clamp(32px, 6vw, 52px);
-  color: #7DF9FF; /* blue highlight */
-  text-shadow: 3px 3px #000;
   display: block;
-  margin-top: 8px;
-}
-
-/* ===== HEADER & TICKER GLOW ===== */
-h1, .ticker {
-  animation: glowFlicker 1.5s infinite alternate;
-  will-change: text-shadow, opacity;
-}
-
-@keyframes glowFlicker {
-  0% {
-    text-shadow: 4px 4px #000, 10px 10px #ff4fd8 !important;
-    opacity: 1;
-  }
-  20% {
-    text-shadow: 4px 4px #000, 10px 10px #ff69eb !important;
-    opacity: 0.95;
-  }
-  40% {
-    text-shadow: 4px 4px #000, 10px 10px #ff00ff !important;
-    opacity: 0.9;
-  }
-  60% {
-    text-shadow: 4px 4px #000, 10px 10px #ff85c2 !important;
-    opacity: 0.98;
-  }
-  80% {
-    text-shadow: 4px 4px #000, 10px 10px #ff4fd8 !important;
-    opacity: 0.96;
-  }
-  100% {
-    text-shadow: 4px 4px #000, 10px 10px #ff69eb !important;
-    opacity: 1;
-  }
-}
-
-/* Optional: Make ticker flicker slightly faster than header */
-.ticker {
-  animation-duration: 1.2s;
-}
-
-/* ===== VAPE ===== */
-#vape-zone {
-  position: relative;
-  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(20px, 5vw, 40px);
+  color: var(--blue);
+  text-shadow: 3px 3px 0 #000;
   margin-top: 10px;
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* ================= VAPE ZONE ================= */
+#vape-zone {
+  text-align: center;
+  padding-bottom: 40px;
+}
+
+.vape-container {
+  position: relative;
+  display: inline-block;
+  margin: 20px auto;
+}
+
 #vape {
-  width: clamp(220px, 45vw, 360px);
-  max-width: 90vw;
-  cursor: pointer;
-  transition: transform 0.1s steps(2);
+  width: clamp(200px, 50vw, 400px);
+  cursor: pointer; /* Fallback */
+  transition: transform 0.1s;
+  display: block;
 }
 
 #vape:active {
-  transform: scale(0.96);
+  transform: scale(0.98) rotate(1deg);
+}
+
+#smoke-origin {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  transform: translate(-50%, 0);
+  pointer-events: none;
 }
 
 .hint {
   font-family: 'Press Start 2P', monospace;
   font-size: 10px;
-  opacity: 0.7;
-  margin-top: 8px;
+  opacity: 0.8;
+  margin-bottom: 20px;
+  animation: blink 2s infinite;
 }
 
-/* ===== PUFF COUNTER ===== */
+@keyframes blink {
+  50% { opacity: 0.4; }
+}
+
+/* ================= CONTROLS ================= */
 #counter {
   font-family: 'Press Start 2P', monospace;
   font-size: 14px;
-  margin: 16px auto 0 auto;
-  color: #ffffff;
-  text-shadow: 2px 2px 0 #ff00ff, -2px -2px 0 #ff00ff; /* pixel outline */
+  margin-bottom: 30px;
+  line-height: 1.8;
+  text-shadow: 2px 2px 0 var(--pink);
 }
 
-/* ===== FLAVORS ===== */
 #flavors {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 12px;
-  margin: 30px 10px;
+  gap: 15px;
+  max-width: 600px;
+  margin: 0 auto 30px;
+  padding: 0 10px;
 }
 
-#flavors button {
+button {
   font-family: 'Press Start 2P', monospace;
   font-size: 10px;
-  padding: 10px;
-  background: black;
-  color: white;
-  border: 3px solid white;
-  cursor: pointer;
-}
-
-#flavors button.active {
-  background: #ff4fd8;
-  color: black;
-}
-
-/* ===== SHARE BUTTON ===== */
-#share-btn {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 12px;
-  background: #ff77cc;
+  padding: 12px 16px;
+  background: #000;
   color: #fff;
-  border: 2px solid #ffd700;
-  padding: 6px 12px;
-  margin-top: 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  text-shadow: 0 0 4px #fff;
-  transition: transform 0.1s ease;
+  border: 2px solid #fff;
+  cursor: none; /* Use custom cursor */
+  transition: all 0.2s;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
 }
 
-#share-btn:active {
-  transform: scale(0.95);
+button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
 }
 
-/* ===== SMOKE ===== */
-.smoke {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.4;
-  filter: blur(3px);
-  pointer-events: none;
-  image-rendering: pixelated;
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0 0 0;
 }
 
-.cursor-smoke {
-  width: 14px;
-  height: 14px;
-  background: #FF4FD8;
-  border-radius: 50%;
-  position: fixed;
-  pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.8);
-  z-index: 9999;
-  mix-blend-mode: screen;
-  filter: blur(2px);
-  opacity: 0.6;
-  transition: width 0.2s, height 0.2s, background 0.2s;
+button.active {
+  background: var(--pink);
+  color: #000;
+  border-color: #000;
 }
 
-.cursor-smoke.smoke-large {
-  width: 20px;
-  height: 20px;
-  opacity: 0.8;
+#share-btn {
+  background: var(--blue);
+  color: #000;
+  border-color: #000;
+  font-size: 12px;
 }
 
-/* GOLDEN PUFF SMOKE */
-[data-color="#FFD700"].smoke,
-.smoke[data-color="#FFD700"] {
-  background: #FFD700;
-  box-shadow: 0 0 12px #FFD700, 0 0 20px #fff8a0;
-  opacity: 0.5;
+/* ================= INFO SECTIONS ================= */
+.content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-/* ===== SECTIONS ===== */
-section {
-  text-align: center;
-  padding: 40px 20px;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: all 0.5s ease-out; /* smooth */
-}
-section.show {
-  opacity: 1;
+.info-box {
+  background: rgba(0,0,0,0.3);
+  border: 4px solid #fff;
+  padding: 30px;
+  margin-bottom: 40px;
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.2);
+  opacity: 1; /* Default visible */
   transform: translateY(0);
 }
 
-
-/* ===== SCREEN ZOOM ===== */
-body.zoom {
-  transform: scale(1.02);
-  transition: transform 0.15s ease;
+.info-box h2 {
+  font-family: 'Press Start 2P', monospace;
+  color: var(--blue);
+  text-shadow: 2px 2px 0 #000;
+  margin-top: 0;
 }
 
-/* ===== UNLOCK OVERLAY ===== */
-#unlock-overlay {
+.info-box p {
+  font-size: 20px;
+  line-height: 1.4;
+  margin-bottom: 0;
+}
+
+/* ================= SMOKE PARTICLES ================= */
+.smoke {
   position: fixed;
-  inset: 0;
-  background: rgba(255, 120, 190, 0.35);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-#unlock-box {
-  background: #ffb6d9;
-  padding: 28px 34px;
-  border-radius: 18px;
-  font-family: 'Press Start 2P', monospace;
-  text-align: center;
-  box-shadow: 0 0 40px #ffd700;
-}
-
-/* ===== MOBILE SAFETY ===== */
-#vape {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
-  pointer-events: auto;  /* make sure touch works */
-  cursor: pointer;
-}
-
-/* ===== VAPE MOUTH (Smoke Origin) ===== */
-#vape-mouth {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  top: 10%;      /* roughly at mouth height, adjust until it looks right */
-  left: 50%;
-  transform: translateX(-50%);
   pointer-events: none;
-  z-index: 5;
-  background: transparent;
-}
-
-/* ===== LONG DRAG SMOKE (Optional) ===== */
-.smoke.long-drag {
-  transform: scale(2);     /* bigger than normal smoke */
-  opacity: 0.8 !important;
-  filter: blur(6px) !important;
-}
-
-.share-card {
-  background: radial-gradient(circle at top, #ff8ad8, #ff4fd8);
-  border: 6px solid white;
-  padding: 20px;
-  text-align: center;
-  font-family: 'Press Start 2P', monospace;
-  box-shadow: 0 0 30px #ff69eb;
-}
-
-body {
-  touch-action: manipulation;
+  border-radius: 50%;
+  filter: blur(5px);
+  opacity: 0.6;
+  z-index: 1000; /* Above text */
 }
