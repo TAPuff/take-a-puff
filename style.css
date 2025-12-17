@@ -78,6 +78,43 @@ h1 {
   margin-top: 8px;
 }
 
+/* ===== HEADER & TICKER GLOW ===== */
+h1, .ticker {
+  animation: glowFlicker 1.5s infinite alternate;
+}
+
+@keyframes glowFlicker {
+  0% {
+    text-shadow: 4px 4px #000, 10px 10px #ff4fd8;
+    opacity: 1;
+  }
+  20% {
+    text-shadow: 4px 4px #000, 10px 10px #ff69eb;
+    opacity: 0.95;
+  }
+  40% {
+    text-shadow: 4px 4px #000, 10px 10px #ff00ff;
+    opacity: 0.9;
+  }
+  60% {
+    text-shadow: 4px 4px #000, 10px 10px #ff85c2;
+    opacity: 0.98;
+  }
+  80% {
+    text-shadow: 4px 4px #000, 10px 10px #ff4fd8;
+    opacity: 0.96;
+  }
+  100% {
+    text-shadow: 4px 4px #000, 10px 10px #ff69eb;
+    opacity: 1;
+  }
+}
+
+/* Optional: Make ticker flicker slightly faster than header */
+.ticker {
+  animation-duration: 1.2s;
+}
+
 /* ===== VAPE ===== */
 #vape-zone {
   position: relative;
