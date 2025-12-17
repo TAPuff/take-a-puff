@@ -8,22 +8,23 @@ document.addEventListener("DOMContentLoaded", () => {
   let interval = null;
 
   /* ===== SPAWN SMOKE FROM VAPE ===== */
-  function spawnSmoke() {
-    const rect = vape.getBoundingClientRect();
+function spawnSmoke() {
+  const mouth = document.getElementById("vape-mouth");
+  if (!mouth) return;
 
-    // 🔥 THIS IS THE MOUTH POSITION
-    const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height * 0.02;
+  const rect = mouth.getBoundingClientRect();
+  const vapeX = rect.left;
+  const vapeY = rect.top;
 
-    const smoke = document.createElement("div");
-    smoke.className = "smoke";
-    smoke.style.left = x + "px";
-    smoke.style.top = y + "px";
-    smoke.style.background = smokeColor;
+  const smoke = document.createElement("div");
+  smoke.className = "smoke";
+  smoke.style.left = vapeX + "px";
+  smoke.style.top = vapeY + "px";
+  smoke.style.background = smokeColor;
 
-    document.body.appendChild(smoke);
-    setTimeout(() => smoke.remove(), 3000);
-  }
+  document.body.appendChild(smoke);
+  setTimeout(() => smoke.remove(), 3000);
+}
 
   function startDrag(e) {
     e.preventDefault();

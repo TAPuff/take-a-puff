@@ -135,4 +135,16 @@ h1 {
 section {
   text-align: center;
   padding: 40px 20px;
+  opacity: 1;
+  transform: none;
+}
+
+#vape-mouth {
+  position: absolute;
+  top: 6%;            /* ← move this slightly if needed */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 2px;
+  pointer-events: none;
 }
