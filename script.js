@@ -468,9 +468,8 @@ class VapeApp {
     });
     
     // Button Sounds
-    document.querySelectorAll('button, .social-btn').forEach(btn => {
+    document.querySelectorAll('button, .social-btn, .nav-link, #pump-btn, .nav-icon').forEach(btn => {
       btn.addEventListener('mouseenter', () => {
-        // Optional hover sound?
       });
       btn.addEventListener('click', () => {
         const sound = btn.getAttribute('data-sound') || 'click';
@@ -478,8 +477,7 @@ class VapeApp {
       });
     });
 
-    // Share & CA
-    document.getElementById('share-btn').addEventListener('click', () => this.shareScore());
+    // CA
     document.getElementById('ca-btn').addEventListener('click', () => {
       alert("CA: COMING_SOON_ON_SOLANA_CHAIN_XYZ");
     });
@@ -786,6 +784,12 @@ class VapeApp {
         buttons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.smokeColor = btn.getAttribute('data-color');
+        const list = document.getElementById('flavors');
+        const toggle = document.getElementById('flavor-toggle');
+        if (list && toggle && !list.hasAttribute('hidden')) {
+          list.setAttribute('hidden', '');
+          toggle.textContent = 'SELECT FLAVOR ▾';
+        }
       });
     });
     const toggle = document.getElementById('flavor-toggle');
@@ -801,22 +805,18 @@ class VapeApp {
           toggle.textContent = 'SELECT FLAVOR ▾';
         }
       });
+      document.addEventListener('click', (e) => {
+        const dd = document.querySelector('.flavor-dropdown');
+        if (!dd) return;
+        if (!dd.contains(e.target) && !list.hasAttribute('hidden')) {
+          list.setAttribute('hidden', '');
+          toggle.textContent = 'SELECT FLAVOR ▾';
+        }
+      });
     }
   }
 
-  shareScore() {
-    if (typeof html2canvas === 'undefined') {
-      alert('Share not ready. Please wait.');
-      return;
-    }
-    const target = document.querySelector('main');
-    html2canvas(target, { backgroundColor: null, scale: 2 }).then(canvas => {
-      const link = document.createElement('a');
-      link.download = `PUFF_SCORE_${this.puffCount}.png`;
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  }
+  // share removed
 
   saveStats() {
     localStorage.setItem('puffs', this.puffCount);

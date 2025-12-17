@@ -222,6 +222,22 @@ h1 {
   border-bottom: 2px solid #fff;
   box-shadow: 0 6px 20px rgba(255,79,216,0.5);
 }
+.top-nav #pump-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: #000;
+  text-decoration: none;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #ff85c2, #ff4fd8);
+  border: 2px solid #000;
+  border-radius: 8px;
+  box-shadow: 0 0 12px rgba(255,79,216,0.8), 4px 4px 0 rgba(0,0,0,0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.top-nav #pump-btn:hover { transform: translateY(-2px); box-shadow: 0 0 16px rgba(255,105,235,1), 6px 6px 0 rgba(0,0,0,0.2); }
+.nav-links { display: flex; gap: 10px; }
+.nav-icons { margin-left: auto; display: flex; gap: 10px; }
+.nav-icon { display: inline-block; padding: 6px; border: 2px solid #000; background: #fff; border-radius: 8px; box-shadow: 4px 4px 0 rgba(0,0,0,0.2); }
 .top-nav .nav-link {
   font-family: 'Press Start 2P', monospace;
   font-size: 10px;
@@ -445,7 +461,7 @@ button.active {
 .solana-footer {
   text-align: center;
   padding: 40px;
-  background: linear-gradient(180deg, #ffffff, #f7f7f7);
+  background: linear-gradient(180deg, #ffd1e8, #ff85c2, #ff4fd8);
   color: #000;
   font-family: 'Press Start 2P', monospace;
   font-size: 12px;
@@ -491,6 +507,17 @@ button.active {
   filter: blur(10px);
   opacity: 0.9;
   z-index: 1000; 
+}
+
+.ca-big {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  padding: 16px 20px;
+  background: linear-gradient(180deg, #ffd1e8, #ff69eb);
+  color: #000;
+  border: 3px solid #000;
+  border-radius: 10px;
+  box-shadow: 0 0 14px rgba(255,105,235,0.9), 6px 6px 0 rgba(0,0,0,0.2);
 }
 
 /* Smoke Text */
