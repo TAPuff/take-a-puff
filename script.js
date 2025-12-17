@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 🔥 THIS IS THE MOUTH POSITION
     const x = rect.left + rect.width / 2;
-    const y = rect.top + rect.height * 0.12;
+    const y = rect.top + rect.height * 0.02;
 
     const smoke = document.createElement("div");
     smoke.className = "smoke";
