@@ -1,18 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   const vape = document.getElementById("vape");
   const flavorButtons = document.querySelectorAll("#flavors button");
-  const shareBtn = document.getElementById("share-btn");
+  const smokeLayer = document.getElementById("smoke-layer");
 
-  // PUFF COUNTERS & SECRET
   let puffCount = Number(localStorage.getItem("puffs")) || 0;
   let longDragCount = Number(localStorage.getItem("longDrags")) || 0;
   let secretUnlocked = localStorage.getItem("secret") === "true";
+  let smokeColor = "#FF4FD8";
 
   document.getElementById("puff-count").textContent = puffCount;
   document.getElementById("long-drag-count").textContent = longDragCount;
-
-  // DEFAULT SMOKE COLOR
-  let smokeColor = "#FF4FD8";
 
   // MAIN CURSOR
   const mainCursor = document.createElement("div");
@@ -28,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // SPAWN SMOKE
+  // SPAWN SMOKE (append to #smoke-layer)
   function spawnSmoke(hold = 500, burst = false) {
     const vapeRect = vape.getBoundingClientRect();
     const vapeX = vapeRect.left + vapeRect.width / 2;
@@ -45,13 +42,14 @@ document.addEventListener("DOMContentLoaded", () => {
       smoke.style.top = vapeY + "px";
       smoke.style.background = smokeColor;
       smoke.style.setProperty("--drift", `${(Math.random() - 0.5) * 100}px`);
-      document.body.appendChild(smoke);
+      smokeLayer.appendChild(smoke);
 
-      setTimeout(() => smoke.remove(), 5000); // match CSS animation
+      // remove after animation
+      setTimeout(() => smoke.remove(), 5000);
     }
   }
 
-  // DRAG INTERACTIONS
+  // DRAG
   let dragging = false;
   let dragStart = null;
   let interval = null;
@@ -113,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // CURSOR TRAIL
   const trailElements = [];
   const maxTrail = 25;
-
   document.addEventListener("mousemove", e => {
     mainCursor.style.left = e.clientX + "px";
     mainCursor.style.top = e.clientY + "px";
@@ -132,11 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
     trail.animate([
       { transform: `translate(-50%, -50%) translate(0,0) scale(0.8)`, opacity: 0.6 },
       { transform: `translate(-50%, -50%) translate(${driftX}px, ${driftY}px) scale(1.2)`, opacity: 0 }
-    ], {
-      duration: 2000 + Math.random() * 2000,
-      easing: "ease-out",
-      fill: "forwards"
-    });
+    ], { duration: 2000 + Math.random() * 2000, easing: "ease-out", fill: "forwards" });
 
     if (trailElements.length > maxTrail) {
       const old = trailElements.shift();
@@ -176,18 +169,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // COUGH EASTER EGG
+  // COUGH
   function triggerCough() {
     overpuff = 0;
     document.body.style.filter = "contrast(1.4)";
     setTimeout(() => document.body.style.filter = "", 300);
   }
 
-  // INITIAL SECRET CHECK
   if (secretUnlocked) unlockSecretFlavor();
-});
 
-  // ===== SECTION OBSERVER =====
+  // SECTIONS
   const sections = document.querySelectorAll("section");
   const observer = new IntersectionObserver(entries => {
     entries.forEach(entry => {
@@ -195,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
         entry.target.classList.add("show");
       }
     });
-  },{threshold: 0.2});
-
+  }, { threshold: 0.2 });
   sections.forEach(sec => observer.observe(sec));
 });
