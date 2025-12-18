@@ -527,10 +527,6 @@ class VapeApp {
       });
     });
 
-    // CA
-    document.getElementById('ca-btn').addEventListener('click', () => {
-      alert("CA: COMING_SOON_ON_SOLANA_CHAIN_XYZ");
-    });
   }
   
   startCAReveal() {
@@ -579,7 +575,7 @@ class VapeApp {
     const now = Date.now();
     if (now - this.lastPuffTime < 500) {
       this.spamCount++;
-      if (this.spamCount > 14) {
+      if (this.spamCount > 4) {
         this.triggerBurntCoil();
         return;
       }
@@ -656,7 +652,7 @@ class VapeApp {
     }
     
     // Nicotine Rush
-    this.nicotine = Math.min(100, this.nicotine + 8);
+    this.nicotine = Math.min(100, this.nicotine + 5);
     this.floodLevel = Math.min(100, this.floodLevel + 5);
     
     // Smoke Message Chance
@@ -879,7 +875,7 @@ class VapeApp {
 
   gameLoop() {
     // Nicotine Decay
-    if (this.nicotine > 0) this.nicotine -= 0.1;
+    if (this.nicotine > 0) this.nicotine -= 0.18;
     this.nicBar.style.width = `${this.nicotine}%`;
 
     // Nicotine Effects
@@ -1000,6 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const loaderImg = document.querySelector('.loader-vape');
   let percent = 0;
   let fastTrack = false;
+  let finished = false;
   if (loaderImg) {
     loaderImg.addEventListener('load', () => { fastTrack = true; });
   }
@@ -1008,9 +1005,14 @@ document.addEventListener('DOMContentLoaded', () => {
     percent = Math.min(100, percent + step);
     if (percentEl) percentEl.textContent = percent;
     if (percent >= 100) {
-      clearInterval(interval);
-      if (overlay) overlay.style.display = 'none';
-      document.body.classList.remove('loading');
+      if (!finished) {
+        finished = true;
+        clearInterval(interval);
+        setTimeout(() => {
+          if (overlay) overlay.style.display = 'none';
+          document.body.classList.remove('loading');
+        }, 1000);
+      }
     }
   }, 30);
   window.app = new VapeApp();

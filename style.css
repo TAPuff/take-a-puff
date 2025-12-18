@@ -522,6 +522,31 @@ button.active {
   margin-bottom: 0;
 }
 
+.phase-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 10px;
+}
+.phase-box {
+  background: rgba(0,0,0,0.35);
+  border: 4px solid #fff;
+  padding: 16px;
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+}
+.phase-box h3 {
+  font-family: 'Press Start 2P', monospace;
+  color: var(--blue);
+  margin: 0 0 6px 0;
+}
+.phase-box p {
+  margin: 6px 0 10px 0;
+}
+.phase-box ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
 .pump-link {
   color: #14F195;
   text-decoration: underline;
@@ -531,20 +556,40 @@ button.active {
 /* ================= FOOTER ================= */
 .solana-footer {
   text-align: center;
-  padding: 40px;
+  padding: 40px 20px;
   background: linear-gradient(180deg, #ffd1e8, #ff85c2, #ff4fd8);
   color: #000;
   font-family: 'Press Start 2P', monospace;
   font-size: 12px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+  display: grid;
+  gap: 12px;
 }
 
 .solana-logo {
   width: 30px;
   height: 30px;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.footer-links a {
+  color: #000;
+  text-decoration: underline;
+}
+.footer-copy {
+  font-size: 10px;
+  opacity: 0.8;
 }
 
 /* Sections for nav targets */
