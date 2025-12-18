@@ -652,7 +652,7 @@ class VapeApp {
     }
     
     // Nicotine Rush
-    this.nicotine = Math.min(100, this.nicotine + 5);
+    this.nicotine = Math.min(100, this.nicotine + 6);
     this.floodLevel = Math.min(100, this.floodLevel + 5);
     
     // Smoke Message Chance
@@ -875,7 +875,7 @@ class VapeApp {
 
   gameLoop() {
     // Nicotine Decay
-    if (this.nicotine > 0) this.nicotine -= 0.18;
+    if (this.nicotine > 0) this.nicotine -= 0.144;
     this.nicBar.style.width = `${this.nicotine}%`;
 
     // Nicotine Effects
