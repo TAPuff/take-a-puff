@@ -426,6 +426,7 @@ class VapeApp {
 
     // Context Menu disable
     this.vapeBtn.addEventListener('contextmenu', e => e.preventDefault());
+    this.vapeBtn.addEventListener('dragstart', e => e.preventDefault());
 
     // Audio Unlock
     const unlock = () => {

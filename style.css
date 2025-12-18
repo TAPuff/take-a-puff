@@ -298,6 +298,8 @@ h1 {
   transition: transform 0.1s;
   display: block;
   touch-action: none; /* Critical for mobile hold */
+  -webkit-user-drag: none;
+  user-drag: none;
 }
 
 #vape:active {
