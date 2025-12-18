@@ -636,6 +636,7 @@ class VapeApp {
     if (isPerfect) {
       this.audio.playSound('golden');
       this.spawnCloud(true, '#FFD700'); // Gold
+      this.spawnSmokeText('PERFECT PUFF');
     } else {
       if (Math.random() < 0.01) {
         this.audio.playSound('legendary');
@@ -655,7 +656,7 @@ class VapeApp {
     }
     
     // Nicotine Rush
-    this.nicotine = Math.min(100, this.nicotine + 10);
+    this.nicotine = Math.min(100, this.nicotine + 5);
     this.floodLevel = Math.min(100, this.floodLevel + 5);
     
     // Smoke Message Chance
@@ -706,9 +707,9 @@ class VapeApp {
     }
   }
 
-  spawnSmokeText() {
+  spawnSmokeText(message) {
     const texts = ["$PUFF", "HODL", "ONE MORE", "MOON"];
-    const text = texts[Math.floor(Math.random() * texts.length)];
+    const text = message || texts[Math.floor(Math.random() * texts.length)];
     
     const el = document.createElement('div');
     el.className = 'smoke-text';
@@ -805,6 +806,24 @@ class VapeApp {
     void el.offsetWidth;
     el.classList.add('show');
     setTimeout(() => el.classList.remove('show'), 2500);
+    const colors = ['#ff4fd8','#7DF9FF','#9945FF','#ffffff'];
+    for (let i = 0; i < 60; i++) {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      const x = window.innerWidth / 2 + (Math.random()*120-60);
+      const y = window.innerHeight / 2 + (Math.random()*40-20);
+      c.style.left = x + 'px';
+      c.style.top = y + 'px';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      document.body.appendChild(c);
+      const dx = (Math.random()*2-1)*300;
+      const dy = - (100 + Math.random()*300);
+      const rot = Math.random()*360;
+      c.animate([
+        { transform: `translate(0,0) rotate(0deg)`, opacity: 1 },
+        { transform: `translate(${dx}px, ${dy}px) rotate(${rot}deg)`, opacity: 0 }
+      ], { duration: 1600 + Math.random()*800, easing: 'ease-out' }).onfinish = () => c.remove();
+    }
   }
 
   spawnFireworks(color) {
@@ -860,21 +879,29 @@ class VapeApp {
 
   gameLoop() {
     // Nicotine Decay
-    if (this.nicotine > 0) this.nicotine -= 0.1;
+    if (this.nicotine > 0) this.nicotine -= 0.15;
     this.nicBar.style.width = `${this.nicotine}%`;
 
     // Nicotine Effects
     if (this.nicotine > 80) {
       document.body.classList.add('zoom-pulse');
       this.audio.setIntensity(3); // Full Lo-fi
+      document.getElementById('nicotine-meter-container')?.classList.add('nic-shake');
+      this.nicBar.classList.add('glow');
     } else if (this.nicotine > 50) {
       document.body.classList.remove('zoom-pulse');
       this.audio.setIntensity(2); // Snare
+      document.getElementById('nicotine-meter-container')?.classList.remove('nic-shake');
+      this.nicBar.classList.add('glow');
     } else if (this.nicotine > 20) {
       this.audio.setIntensity(1); // Kick
+      document.getElementById('nicotine-meter-container')?.classList.remove('nic-shake');
+      this.nicBar.classList.remove('glow');
     } else {
       document.body.classList.remove('zoom-pulse');
       this.audio.setIntensity(0); // Silent
+      document.getElementById('nicotine-meter-container')?.classList.remove('nic-shake');
+      this.nicBar.classList.remove('glow');
     }
     
     // Reactive Ticker: glow and speed
