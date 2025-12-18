@@ -110,7 +110,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9000;
+  z-index: 10002;
 }
 
 .flood-warning {
@@ -588,7 +588,7 @@ button.active {
   text-decoration: underline;
 }
 .footer-copy {
-  font-size: 10px;
+  font-size: 9px;
   opacity: 0.8;
 }
 
@@ -774,7 +774,7 @@ button.active {
   padding: 18px 24px;
   font-family: 'Press Start 2P', monospace;
   font-size: clamp(16px, 4.5vw, 28px);
-  z-index: 10000;
+  z-index: 10002;
   display: none;
   box-shadow: 0 0 24px rgba(255,105,235,0.9), 10px 10px 0 rgba(0,0,0,0.3);
   text-shadow: 2px 2px 0 #fff;
