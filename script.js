@@ -267,6 +267,52 @@ class VapeAudio {
         osc.stop(time + 2);
       });
     };
+    
+    const playHihat = (time) => {
+      if (this.lofiLayerCount < 4) return;
+      const noise = this.ctx.createBufferSource();
+      noise.buffer = this.createNoise();
+      const filter = this.ctx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 6000;
+      const gain = this.ctx.createGain();
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      gain.gain.setValueAtTime(0.08, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.06);
+      noise.start(time);
+      noise.stop(time + 0.06);
+    };
+    
+    const playBass = (time) => {
+      if (this.lofiLayerCount < 5) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.frequency.setValueAtTime(55, time);
+      gain.gain.setValueAtTime(0.22, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.45);
+      osc.start(time);
+      osc.stop(time + 0.45);
+    };
+    
+    const playLead = (time) => {
+      if (this.lofiLayerCount < 6) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.frequency.setValueAtTime(880, time);
+      osc.frequency.linearRampToValueAtTime(660, time + 0.4);
+      gain.gain.setValueAtTime(0.05, time);
+      gain.gain.linearRampToValueAtTime(0, time + 0.4);
+      osc.start(time);
+      osc.stop(time + 0.4);
+    };
 
     // Sequencer Loop
     let nextNoteTime = this.ctx.currentTime;
@@ -278,6 +324,12 @@ class VapeAudio {
         playSnare(nextNoteTime + beatTime);
         playKick(nextNoteTime + beatTime * 2);
         playSnare(nextNoteTime + beatTime * 3);
+        for (let i = 0; i < 8; i++) {
+          playHihat(nextNoteTime + (beatTime / 2) * i);
+        }
+        playBass(nextNoteTime);
+        playBass(nextNoteTime + beatTime * 2);
+        playLead(nextNoteTime + beatTime * 3);
         
         nextNoteTime += beatTime * 4;
       }
@@ -652,7 +704,7 @@ class VapeApp {
     }
     
     // Nicotine Rush
-    this.nicotine = Math.min(100, this.nicotine + 6);
+    this.nicotine = Math.min(100, this.nicotine + 7);
     this.floodLevel = Math.min(100, this.floodLevel + 5);
     
     // Smoke Message Chance
@@ -879,23 +931,29 @@ class VapeApp {
     this.nicBar.style.width = `${this.nicotine}%`;
 
     // Nicotine Effects
-    if (this.nicotine > 80) {
+    const level = this.nicotine;
+    let audioLayers = 0;
+    if (level > 80) audioLayers = 6;
+    else if (level > 60) audioLayers = 5;
+    else if (level > 40) audioLayers = 4;
+    else if (level > 25) audioLayers = 3;
+    else if (level > 10) audioLayers = 2;
+    else if (level > 0) audioLayers = 1;
+    this.audio.setIntensity(audioLayers);
+    
+    if (level > 80) {
       document.body.classList.add('zoom-pulse');
-      this.audio.setIntensity(3); // Full Lo-fi
       document.getElementById('nicotine-meter-container')?.classList.add('nic-shake');
       this.nicBar.classList.add('glow');
-    } else if (this.nicotine > 50) {
+    } else if (level > 50) {
       document.body.classList.remove('zoom-pulse');
-      this.audio.setIntensity(2); // Snare
       document.getElementById('nicotine-meter-container')?.classList.remove('nic-shake');
       this.nicBar.classList.add('glow');
-    } else if (this.nicotine > 20) {
-      this.audio.setIntensity(1); // Kick
+    } else if (level > 20) {
       document.getElementById('nicotine-meter-container')?.classList.remove('nic-shake');
       this.nicBar.classList.remove('glow');
     } else {
       document.body.classList.remove('zoom-pulse');
-      this.audio.setIntensity(0); // Silent
       document.getElementById('nicotine-meter-container')?.classList.remove('nic-shake');
       this.nicBar.classList.remove('glow');
     }
