@@ -779,6 +779,7 @@ class VapeApp {
       if (this.puffCount >= count && !this.unlockedFlavors.has(count)) {
         this.unlockedFlavors.add(count);
         this.audio.playSound('unlock');
+        this.showToast('NEW JUICE UNLOCKED');
         this.spawnFireworks(milestones[count].color);
         this.addFlavorBtn(milestones[count].name, milestones[count].color);
       }
@@ -794,6 +795,16 @@ class VapeApp {
     }
 
     localStorage.setItem('unlocked', JSON.stringify([...this.unlockedFlavors]));
+  }
+  
+  showToast(text) {
+    const el = document.getElementById('unlock-toast');
+    if (!el) return;
+    el.textContent = text;
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2500);
   }
 
   spawnFireworks(color) {

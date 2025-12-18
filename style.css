@@ -252,6 +252,13 @@ h1 {
   box-shadow: 4px 4px 0 rgba(0,0,0,0.2);
 }
 .top-nav .nav-link:hover { transform: translateY(-2px); }
+@media (max-width: 560px) {
+  .top-nav { flex-wrap: wrap; gap: 8px; padding: 8px; }
+  .top-nav #pump-btn { order: -1; width: 100%; text-align: center; }
+  .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; }
+  .nav-icons { width: 100%; justify-content: center; overflow-x: auto; }
+  .nav-icons a { flex: 0 0 auto; }
+}
 
 /* ================= VAPE ZONE ================= */
 #vape-zone {
@@ -674,6 +681,24 @@ button.active {
   0% { transform: translate(0,0) }
   100% { transform: translate(0,-30px) }
 }
+
+.toast {
+  position: fixed;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.9);
+  background: #000;
+  color: #0f0;
+  border: 4px solid #fff;
+  padding: 12px 16px;
+  font-family: 'Press Start 2P', monospace;
+  z-index: 10000;
+  display: none;
+  box-shadow: 8px 8px 0 rgba(0,0,0,0.3);
+}
+.toast.show { display: block; animation: toastPop 0.4s ease, toastFade 2.2s 0.6s forwards; }
+@keyframes toastPop { 0% { transform: translateX(-50%) scale(0.9); opacity: 0 } 100% { transform: translateX(-50%) scale(1); opacity: 1 } }
+@keyframes toastFade { 100% { opacity: 0; transform: translateX(-50%) scale(0.95) } }
 
 /* ================= MODAL ================= */
 .modal-overlay {
