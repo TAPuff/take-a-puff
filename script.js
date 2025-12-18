@@ -579,7 +579,7 @@ class VapeApp {
     const now = Date.now();
     if (now - this.lastPuffTime < 500) {
       this.spamCount++;
-      if (this.spamCount > 4) {
+      if (this.spamCount > 14) {
         this.triggerBurntCoil();
         return;
       }
@@ -656,7 +656,7 @@ class VapeApp {
     }
     
     // Nicotine Rush
-    this.nicotine = Math.min(100, this.nicotine + 5);
+    this.nicotine = Math.min(100, this.nicotine + 8);
     this.floodLevel = Math.min(100, this.floodLevel + 5);
     
     // Smoke Message Chance
@@ -879,7 +879,7 @@ class VapeApp {
 
   gameLoop() {
     // Nicotine Decay
-    if (this.nicotine > 0) this.nicotine -= 0.15;
+    if (this.nicotine > 0) this.nicotine -= 0.1;
     this.nicBar.style.width = `${this.nicotine}%`;
 
     // Nicotine Effects
@@ -995,6 +995,24 @@ class VapeApp {
 
 // Start App
 document.addEventListener('DOMContentLoaded', () => {
+  const overlay = document.getElementById('loading-screen');
+  const percentEl = document.getElementById('loading-percent');
+  const loaderImg = document.querySelector('.loader-vape');
+  let percent = 0;
+  let fastTrack = false;
+  if (loaderImg) {
+    loaderImg.addEventListener('load', () => { fastTrack = true; });
+  }
+  const interval = setInterval(() => {
+    const step = fastTrack ? 4 : 2;
+    percent = Math.min(100, percent + step);
+    if (percentEl) percentEl.textContent = percent;
+    if (percent >= 100) {
+      clearInterval(interval);
+      if (overlay) overlay.style.display = 'none';
+      document.body.classList.remove('loading');
+    }
+  }, 30);
   window.app = new VapeApp();
   // Smooth scroll for top nav with section highlight
   document.querySelectorAll('.top-nav .nav-link').forEach(link => {

@@ -51,6 +51,42 @@ img {
   z-index: 100;
 }
 
+#loading-screen {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10002;
+}
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.loader-vape {
+  width: clamp(200px, 50vw, 420px);
+  filter: drop-shadow(0 0 12px rgba(0,0,0,0.3));
+  animation: vapeSpin 2.2s ease-in-out infinite;
+}
+@keyframes vapeSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.04); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+.loading-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(16px, 4vw, 28px);
+  color: #000;
+  text-shadow: 2px 2px 0 #fff;
+}
+.loading-text #loading-percent {
+  color: var(--blue);
+}
+
 #crt {
   background: repeating-linear-gradient(
     to bottom,
